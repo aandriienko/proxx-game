@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.Predicate;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -57,36 +58,39 @@ public class Board {
         Random random = new Random();
         int blackHolesCount = 0;
         while (blackHolesCount < numberOfBlackHoles) {
-            Cell cell = getCellAt(random.nextInt(rows), random.nextInt(columns));
-            if (placeBlackHoleAt(cell)) {
+            Position position = new Position(random.nextInt(rows), random.nextInt(columns));
+            if (placeBlackHole(position)) {
                 blackHolesCount++;
             }
         }
     }
 
     //places black hole at cell and increase counter on adjacent cells
-    boolean placeBlackHoleAt(Cell cell) {
+    boolean placeBlackHole(Position position) {
+        Cell cell = getCellAt(position);
         if (cell.isBlackHole()) {
             return false;
         }
         cell.markAsBlackHole();
-        getAdjacentCells(cell)
+        getAdjacentCells(position)
                 .forEach(Cell::addAdjacentBlackHolesCount);
         numberOfBlackHoles++;
         return true;
     }
 
-    public void openCell(Cell cell) {
+    public void openCell(Position position) {
+        Cell cell = getCellAt(position);
         if (cell.isBlackHole()) {
             blackHoleOpened = true;
             numberOfOpenedCells = boardSize;
         } else {
-            openSafeCells(cell);
+            openSafeCells(position);
         }
         transitToStatus();
     }
 
-    private void openSafeCells(Cell rootCell) {
+    private void openSafeCells(Position position) {
+        Cell rootCell = getCellAt(position);
         if (rootCell.isBlackHole()) {
             return;
         }
@@ -96,7 +100,7 @@ public class Board {
             Cell cell = cells.poll();
             cell.markAsOpened();
             if (cell.isEmpty()) {
-                List<Cell> adjacentCells = getAdjacentCells(cell);
+                List<Cell> adjacentCells = getAdjacentCells(cell.getPosition());
                 cells.addAll(adjacentCells.stream()
                         .filter(Predicate.not(Cell::isOpened))
                         .toList());
@@ -122,7 +126,7 @@ public class Board {
             for (int column = 0; column < columns; column++) {
                 Cell cell = getCellAt(row, column);
                 if (!cell.isOpened()) {
-                    getCellAt(row, column).markAsOpened();
+                    cell.markAsOpened();
                 }
             }
         }
@@ -148,22 +152,29 @@ public class Board {
         S -->  South        (row+1, col)
         S.E--> South-East   (row+1, col+1)
     */
-    List<Cell> getAdjacentCells(Cell cell) {
+    List<Cell> getAdjacentCells(Position position) {
         List<Cell> adjacentCells = new ArrayList<>();
-        int minRow = Math.max(0, cell.getRow() - 1);
-        int maxRow = Math.min(rows - 1, cell.getRow() + 1);
-        int minColumn = Math.max(0, cell.getColumn() - 1);
-        int maxColumn = Math.min(columns - 1, cell.getColumn() + 1);
+        int cellRow = position.getRow();
+        int cellColumn = position.getColumn();
+
+        int minRow = Math.max(0, cellRow - 1);
+        int maxRow = Math.min(rows - 1, cellRow + 1);
+        int minColumn = Math.max(0, cellColumn - 1);
+        int maxColumn = Math.min(columns - 1, cellColumn + 1);
 
         for (int row = minRow; row <= maxRow; row++) {
             for (int column = minColumn; column <= maxColumn; column++) {
-                if (row == cell.getRow() && column == cell.getColumn()) {
+                if (row == cellRow && column == cellColumn) {
                     continue;
                 }
                 adjacentCells.add(getCellAt(row, column));
             }
         }
         return adjacentCells;
+    }
+
+    Cell getCellAt(Position position) {
+        return getCellAt(position.getRow(), position.getColumn());
     }
 
     Cell getCellAt(int row, int column) {

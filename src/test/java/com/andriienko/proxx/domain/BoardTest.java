@@ -79,7 +79,7 @@ public class BoardTest {
     void shouldReturnAdjacentListForCell() {
         Map<Cell, List<Cell>> adjacencyMap = createAdjacencyMap(board);
         for (Cell cell : adjacencyMap.keySet()) {
-            assertIterableEquals(adjacencyMap.get(cell), board.getAdjacentCells(cell));
+            assertIterableEquals(adjacencyMap.get(cell), board.getAdjacentCells(cell.getPosition()));
         }
     }
 
@@ -87,7 +87,7 @@ public class BoardTest {
     @DisplayName("Places black hole to specified cell")
     void shouldPlaceBlackHoleToCell() {
         Cell cell = board.getCellAt(1, 1);
-        board.placeBlackHoleAt(cell);
+        board.placeBlackHole(cell.getPosition());
         assertEquals(0, cell.getAdjacentBlackHolesCount());
         assertTrue(cell.isBlackHole());
     }
@@ -106,8 +106,7 @@ public class BoardTest {
                 board.getCellAt(2, 2)
         );
         cells.forEach(c -> {
-            assertTrue(board.placeBlackHoleAt(c));
-
+            assertTrue(board.placeBlackHole(c.getPosition()));
         });
         int[][] expectedCounters = new int[][]{
                 {1, 3, 1},
@@ -131,7 +130,7 @@ public class BoardTest {
                 {1, 1, 1}
         };
         for (int i = 0; i < 2; i++) {
-            boolean result = board.placeBlackHoleAt(cell);
+            boolean result = board.placeBlackHole(cell.getPosition());
             if (i == 0) {
                 assertTrue(result);
             } else {
@@ -183,29 +182,17 @@ public class BoardTest {
     @Test
     @DisplayName("On black hole open should lose")
     void shouldLSetBlackHoleOpenedFlagAndOpenAllCells() {
-        board.placeBlackHoleAt(board.getCellAt(1, 1));
+        Position position = new Position(1, 1);
+        board.placeBlackHole(position);
         forEachCell(c -> assertFalse(c.isOpened()));
         assertFalse(board.isBlackHoleOpened());
 
-        board.openCell(board.getCellAt(1, 1));
+        board.openCell(position);
 
         forEachCell(c -> assertTrue(c.isOpened()));
         assertTrue(board.isBlackHoleOpened());
         assertEquals(GameStatus.LOSE, board.getStatus());
     }
-
-   /* @Test
-    @DisplayName("On black hole open nothing happens for safe cells")
-    void shouldNotHandleNonBlackHoles() {
-        board.placeBlackHoleAt(board.getCellAt(1, 1));
-        forEachCell(c -> assertFalse(c.isOpened()));
-        assertFalse(board.isBlackHoleOpened());
-
-        board.openCell(board.getCellAt(0, 0));
-
-        forEachCell(c -> assertFalse(c.isOpened()));
-        assertFalse(board.isBlackHoleOpened());
-    }*/
 
     private void forEachCell(Consumer<Cell> action) {
         for (int row = 0; row < BOARD_DIMENSION_SIZE; row++) {
@@ -239,7 +226,7 @@ public class BoardTest {
     @Test
     @DisplayName("Should open single cell if root cell non-empty ")
     void shouldOpenSingLeCellIfNonEmpty() {
-        board.placeBlackHoleAt(board.getCellAt(1, 2));
+        board.placeBlackHole(new Position(1, 2));
 
         forEachCell(c -> {
             assertFalse(c.isOpened());
@@ -247,7 +234,7 @@ public class BoardTest {
         assertEquals(0, board.getNumberOfOpenedCells());
 
         final Cell rootCell = board.getCellAt(1, 1);
-        board.openCell(rootCell);
+        board.openCell(rootCell.getPosition());
 
         forEachCell(c -> {
             if (c == rootCell) {
@@ -263,12 +250,12 @@ public class BoardTest {
     @Test
     @DisplayName("Opens root cell and its empty neighbors")
     public void shouldOpenRootAndEmptyNeighbors() {
-        board.placeBlackHoleAt(board.getCellAt(1, 2));
+        board.placeBlackHole(new Position(1, 2));
         forEachCell(c -> assertFalse(c.isOpened()));
         assertEquals(0, board.getNumberOfOpenedCells());
 
         Cell rootCell = board.getCellAt(0, 0);
-        board.openCell(rootCell);
+        board.openCell(rootCell.getPosition());
 
         final Set<Cell> expectedOpened = Set.of(rootCell,
                 board.getCellAt(1, 0),
@@ -292,12 +279,12 @@ public class BoardTest {
     @DisplayName("Should lead to win when opened all nut black holes")
     public void shouldLeadToWin() {
         Cell blackHole = board.getCellAt(2, 2);
-        board.placeBlackHoleAt(blackHole);
+        board.placeBlackHole(blackHole.getPosition());
         forEachCell(c -> assertFalse(c.isOpened()));
         assertEquals(0, board.getNumberOfOpenedCells());
 
         Cell rootCell = board.getCellAt(0, 0);
-        board.openCell(rootCell);
+        board.openCell(rootCell.getPosition());
 
         forEachCell(c -> {
             if (c == blackHole) {

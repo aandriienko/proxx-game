@@ -20,8 +20,8 @@ public class CellTest {
     @Test
     @DisplayName("A cell should have correct initial state after creation")
     void shouldHaveCorrectInitialState() {
-        assertEquals(0, cell.getRow());
-        assertEquals(0, cell.getColumn());
+        assertEquals(0, cell.getPosition().getRow());
+        assertEquals(0, cell.getPosition().getColumn());
         assertFalse(cell.isOpened());
         assertFalse(cell.isBlackHole());
         assertEquals(0, cell.getAdjacentBlackHolesCount());
