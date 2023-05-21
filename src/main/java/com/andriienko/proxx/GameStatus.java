@@ -1,4 +1,4 @@
-package com.andriienko.proxx.common;
+package com.andriienko.proxx;
 
 public enum GameStatus {
     IN_PROGRESS,

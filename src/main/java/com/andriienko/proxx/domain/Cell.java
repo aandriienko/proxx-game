@@ -13,15 +13,18 @@ import lombok.experimental.FieldDefaults;
 
 @Getter(AccessLevel.PUBLIC)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@EqualsAndHashCode(of = {"position"})
+@EqualsAndHashCode(of = {"row", "column"})
 public class Cell {
-    final Position position;
+    final int row;
+    final int column;
     boolean isOpened;
     boolean isBlackHole;
     int adjacentBlackHolesCount;
 
+    //todo: private constructor + factory methods: for bh and regular, bh - final
     public Cell(int row, int column) {
-        this.position = new Position(row, column);
+        this.row = row;
+        this.column = column;
         this.isBlackHole = false;
         this.isOpened = false;
         this.adjacentBlackHolesCount = 0;

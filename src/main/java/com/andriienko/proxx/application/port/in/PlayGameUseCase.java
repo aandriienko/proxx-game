@@ -1,9 +1,9 @@
 package com.andriienko.proxx.application.port.in;
 
-import com.andriienko.proxx.application.dto.BoardView;
-import com.andriienko.proxx.domain.Position;
+import com.andriienko.proxx.application.dto.GameView;
 
 public interface PlayGameUseCase {
-    BoardView newGame(int rows, int columns, int blackHoles);
-    BoardView openCell(Position position);
+    GameView newGame(int rows, int columns, int blackHoles);
+
+    GameView openCell(int row, int column);
 }

@@ -2,11 +2,12 @@ package com.andriienko.proxx.application.service;
 
 import com.andriienko.proxx.application.dto.BoardView;
 import com.andriienko.proxx.application.dto.CellView;
+import com.andriienko.proxx.application.dto.GameView;
 import com.andriienko.proxx.application.port.in.PlayGameUseCase;
-import com.andriienko.proxx.application.port.out.BoardRepository;
+import com.andriienko.proxx.application.port.out.GameRepository;
 import com.andriienko.proxx.domain.Board;
 import com.andriienko.proxx.domain.Cell;
-import com.andriienko.proxx.domain.Position;
+import com.andriienko.proxx.domain.Game;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,26 +15,37 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProxxGameService implements PlayGameUseCase {
+    GameRepository gameRepository;
 
-    BoardRepository boardRepository;
-
-    public BoardView newGame(int rows, int columns, int blackHoles) {
-        Board board = boardRepository.createBoard(rows, columns, blackHoles);
-        return transformToView(board);
+    public GameView newGame(int rows, int columns, int blackHoles) {
+        Game game = new Game(rows, columns);
+        gameRepository.save(game.start(blackHoles));
+        return transformToGameView(game);
     }
 
-    public BoardView openCell(Position position) {
-        Board board = boardRepository.getActiveBoard()
-                .orElseThrow(() -> new IllegalStateException("No active board found"));
-        board.openCell(position);
-        return transformToView(board);
+    public GameView openCell(int row, int column) {
+        Game game = gameRepository.get();
+        game.openCell(row, column);
+        return transformToGameView(game);
     }
 
-    private BoardView transformToView(Board board) {
+    private GameView transformToGameView(Game game) {
+        return new GameView(
+                game.getNumberOfOpenedCells(),
+                game.getBlackHolesNumber(),
+                game.getSize(),
+                game.getStatus(),
+                transformToBoardView(game)
+        );
+    }
+
+    private BoardView transformToBoardView(Game game) {
+        Board board = game.getBoard();
+
         CellView[][] cells = new CellView[board.getRows()][board.getColumns()];
         for (int row = 0; row < board.getRows(); row++) {
             for (int col = 0; col < board.getColumns(); col++) {
-                Cell cell = board.getCellAt(row, col); //todo: could replace to position?
+                Cell cell = board.getCellAt(row, col);
                 cells[row][col] = new CellView(
                         cell.getAdjacentBlackHolesCount(),
                         cell.isBlackHole(),
@@ -45,7 +57,6 @@ public class ProxxGameService implements PlayGameUseCase {
         return new BoardView(
                 board.getRows(),
                 board.getColumns(),
-                board.getStatus(),
                 cells
         );
     }

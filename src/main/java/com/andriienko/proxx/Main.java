@@ -1,23 +1,21 @@
 package com.andriienko.proxx;
 
+import com.andriienko.proxx.adapter.in.ProxxUIAdapter;
 import com.andriienko.proxx.adapter.in.cli.ProxxCLIAdapter;
-import com.andriienko.proxx.adapter.out.InMemorySingleBoardRepository;
-import com.andriienko.proxx.application.port.out.BoardRepository;
-import com.andriienko.proxx.application.printer.BoardViewPrinter;
+import com.andriienko.proxx.adapter.out.InMemorySingleGameRepository;
+import com.andriienko.proxx.application.port.out.GameRepository;
+import com.andriienko.proxx.adapter.in.formatter.BoardViewFormatter;
 import com.andriienko.proxx.application.port.in.PlayGameUseCase;
-import com.andriienko.proxx.application.cli.ConsoleBoardViewPrinter;
-import com.andriienko.proxx.application.cli.ConsoleCellPrinter;
+import com.andriienko.proxx.adapter.in.cli.formatter.ConsoleBoardViewFormatter;
+import com.andriienko.proxx.adapter.in.cli.formatter.ConsoleCellFormatter;
 import com.andriienko.proxx.application.service.ProxxGameService;
-import com.andriienko.proxx.domain.BoardFactory;
-
-import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        BoardViewPrinter boardViewPrinter = new ConsoleBoardViewPrinter(new ConsoleCellPrinter());
-        BoardRepository boardRepository = new InMemorySingleBoardRepository(new BoardFactory());
-        PlayGameUseCase gameService = new ProxxGameService(boardRepository);
-        ProxxCLIAdapter cliAdapter = new ProxxCLIAdapter(gameService, boardViewPrinter, new Scanner(System.in));
+        BoardViewFormatter boardViewFormatter = new ConsoleBoardViewFormatter(new ConsoleCellFormatter());
+        GameRepository gameRepository = new InMemorySingleGameRepository();
+        PlayGameUseCase gameService = new ProxxGameService(gameRepository);
+        ProxxUIAdapter cliAdapter = new ProxxCLIAdapter(gameService, boardViewFormatter);
         cliAdapter.run();
     }
 }

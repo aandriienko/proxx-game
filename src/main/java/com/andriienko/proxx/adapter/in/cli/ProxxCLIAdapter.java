@@ -1,27 +1,31 @@
 package com.andriienko.proxx.adapter.in.cli;
 
+import com.andriienko.proxx.GameStatus;
+import com.andriienko.proxx.PlayMode;
+import com.andriienko.proxx.adapter.in.ProxxUIAdapter;
+import com.andriienko.proxx.adapter.in.formatter.BoardViewFormatter;
 import com.andriienko.proxx.application.dto.BoardView;
+import com.andriienko.proxx.application.dto.GameView;
 import com.andriienko.proxx.application.port.in.PlayGameUseCase;
-import com.andriienko.proxx.application.printer.BoardViewPrinter;
-import com.andriienko.proxx.common.GameStatus;
-import com.andriienko.proxx.common.PlayMode;
-import com.andriienko.proxx.domain.Position;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.experimental.FieldDefaults;
 
 import java.util.Scanner;
+import java.util.function.Predicate;
 
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ProxxCLIAdapter {
-    PlayGameUseCase gameService;
-    BoardViewPrinter boardViewPrinter;
-    Scanner scanner;
+
+public class ProxxCLIAdapter implements ProxxUIAdapter {
+    private final PlayGameUseCase gameService;
+    private final BoardViewFormatter boardViewFormatter;
+    private final Scanner scanner;
+
+    public ProxxCLIAdapter(PlayGameUseCase gameService, BoardViewFormatter boardViewFormatter) {
+        this.gameService = gameService;
+        this.boardViewFormatter = boardViewFormatter;
+        this.scanner = new Scanner(System.in);
+    }
 
     public void run() {
         printMainMenu();
-        gameLoop(createBoard());
+        gameLoop(createGame());
     }
 
     void printMainMenu() {
@@ -36,34 +40,40 @@ public class ProxxCLIAdapter {
         System.out.println(options);
     }
 
-    BoardView createBoard() {
+    GameView createGame() {
         PlayMode mode = getPlayMode();
-        BoardView boardView;
+        GameView gameView;
         if (mode == PlayMode.CUSTOM) {
-            System.out.println("Row, Columns, # of Black Holes: ");
-            Position position = getPositionInput();
-            int numberOfBlackHoles = getBlackHolesNumber();
-            boardView = gameService.newGame(position.getRow() + 1, position.getColumn() + 1, numberOfBlackHoles);
+            //todo: by requirements i need the only 1 dimension ant it should not be greater lets say 50 (for console) and should be at least 3;
+            int boardSide = getIntInput(bs -> bs > PlayMode.EASY.getRows() && bs <= 50, "Board side: ");
+            int numberOfBlackHoles = getIntInput(bh -> bh > 1 && bh <= boardSide * boardSide - 1, "Black hole number: ");
+            gameView = gameService.newGame(boardSide, boardSide, numberOfBlackHoles);
         } else {
-            boardView = gameService.newGame(mode.getRows(), mode.getColumns(), mode.getColumns());
+            gameView = gameService.newGame(mode.getRows(), mode.getColumns(), mode.getBlackHoles());
         }
-        return boardView;
+        return gameView;
     }
 
-    private void gameLoop(BoardView boardView) {
-        printBoard(boardView);
+    void gameLoop(GameView gameView) {
+        printBoard(gameView.getBoardView());
         do {
-            boardView = gameService.openCell(getPositionInput());
-            printBoard(boardView);
-        } while (boardView.getStatus() == GameStatus.IN_PROGRESS);
+            BoardView finalBoardView = gameView.getBoardView();
+            // Let's allow user to enter 1-based coordinates)
+            int row = getIntInput(r -> r > 0 && r <= finalBoardView.getRows(),
+                    "Row (q for exit): ");
+            int column = getIntInput(c -> c > 0 && c <= finalBoardView.getColumns(),
+                    "Col (q for exit): ");
+            gameView = gameService.openCell(row - 1, column - 1);
+            printBoard(gameView.getBoardView());
+        } while (gameView.getStatus() == GameStatus.IN_PROGRESS);
 
-        if (boardView.getStatus() == GameStatus.WIN) {
+        if (gameView.getStatus() == GameStatus.WIN) {
             System.out.println("Congratulations, you won!");
-            System.console().readLine("\nPress any key to continue");
-            scanner.next();
         } else {
             System.out.println("Sorry, you lose");
-            System.console().readLine("\nPress any key to continue");
+        }
+        if (System.console() != null) {
+            System.console().readLine("\nPress any key to continue...");
         }
         run();
     }
@@ -71,22 +81,7 @@ public class ProxxCLIAdapter {
     private void printBoard(BoardView boardView) {
         System.out.println("\n\n");
         clearScreen();
-        System.out.println(boardViewPrinter.print(boardView));
-    }
-
-    private PlayMode getPlayMode() {
-        PlayMode playMode = null;
-        while (playMode == null) {
-            System.out.print("Enter play mode mode (q for exit): ");
-            String input = getStringOrQuit(scanner);
-            switch (input) {
-                case "1" -> playMode = PlayMode.EASY;
-                case "2" -> playMode = PlayMode.MEDIUM;
-                case "3" -> playMode = PlayMode.EXPERT;
-                case "4" -> playMode = PlayMode.CUSTOM;
-            }
-        }
-        return playMode;
+        System.out.println(boardViewFormatter.format(boardView));
     }
 
     private void printBanner() {
@@ -106,6 +101,21 @@ public class ProxxCLIAdapter {
         System.out.println();
     }
 
+    private PlayMode getPlayMode() {
+        PlayMode playMode = null;
+        while (playMode == null) {
+            System.out.print("Enter play mode mode (q for exit): ");
+            String input = getStringOrQuit(scanner);
+            switch (input) {
+                case "1" -> playMode = PlayMode.EASY;
+                case "2" -> playMode = PlayMode.MEDIUM;
+                case "3" -> playMode = PlayMode.EXPERT;
+                case "4" -> playMode = PlayMode.CUSTOM;
+            }
+        }
+        return playMode;
+    }
+
     private String getStringOrQuit(Scanner scan) {
         String input = scan.nextLine();
         if (input.equalsIgnoreCase("q")) {
@@ -115,66 +125,32 @@ public class ProxxCLIAdapter {
         return input;
     }
 
-    public int getBlackHolesNumber() {
-        int blackHolesNumber = 0;
-        do {
-            System.out.println("# of Black Holes:");
+    int getIntInput(Predicate<Integer> predicate, String promptMessage) {
+        int input = 0;
+        while (!predicate.test(input)) {
+            System.out.print(promptMessage);
             if (!scanner.hasNextInt()) {
-                getStringOrQuit(scanner);
-                System.out.println("Invalid Black Holes #.");
+                 getStringOrQuit(scanner);
                 continue;
             }
-            blackHolesNumber = scanner.nextInt();
-
-        } while (!isBlackHolesNumberValid());
-        return blackHolesNumber;
-
-    }
-
-    public Position getPositionInput() {
-        Position input = new Position(0, 0);
-        int row = 0;
-        int column = 0;
-        do {
-            System.out.print("Row column (q foe exit): ");
-            if (!scanner.hasNextInt()) {
-                String res = getStringOrQuit(scanner);
-                if(res.equalsIgnoreCase("q")) {
-                    run();
-                } else {
-                    System.out.println("Invalid row.");
-                }
-                continue;
-            }
-            row = scanner.nextInt();
-            if (!scanner.hasNextInt()) {
-                getStringOrQuit(scanner);
-                System.out.println("Invalid column.");
-                continue;
-            }
-            column = scanner.nextInt();
-        } while (!isPositionInputValid(input));
-        return new Position(row - 1, column - 1);
-    }
-
-    private boolean isBlackHolesNumberValid() {
-        //todo
-        return true;
-    }
-
-    private boolean isPositionInputValid(Position position) {
-        //todo
-       /* if(!board.validPosition(position)) {
-            System.out.println("Coordinate not inside the play space!");
-            return false;
+            input = scanner.nextInt();
         }
-        if(board.isCellRevealed(position)) {
-            System.out.println("That cell is already opened!");
-            return false;
-        }*/
-        return true;
+
+        /*do {
+            if (!scanner.hasNextInt()) {
+                getStringOrQuit(scanner);
+                continue;
+            }
+            System.out.print(promptMessage);
+            input = scanner.nextInt();
+        } while (!predicate.test(input));*/
+        return input;
     }
 
+
+    /**
+     *  Not all CLI supports this
+     */
     private void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();

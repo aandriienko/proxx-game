@@ -1,9 +1,9 @@
-package com.andriienko.proxx.application.cli;
+package com.andriienko.proxx.adapter.in.cli.formatter;
 
 import com.andriienko.proxx.application.dto.BoardView;
 import com.andriienko.proxx.application.dto.CellView;
-import com.andriienko.proxx.application.printer.BoardViewPrinter;
-import com.andriienko.proxx.application.printer.CellPrinter;
+import com.andriienko.proxx.adapter.in.formatter.BoardViewFormatter;
+import com.andriienko.proxx.adapter.in.formatter.CellFormatter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -12,12 +12,12 @@ import java.util.StringJoiner;
 
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ConsoleBoardViewPrinter implements BoardViewPrinter {
+public class ConsoleBoardViewFormatter implements BoardViewFormatter {
 
-    CellPrinter cellPrinter;
+    CellFormatter cellFormatter;
 
     @Override
-    public String print(BoardView boardView) {
+    public String format(BoardView boardView) {
         StringBuilder sb = new StringBuilder();
 
         // Print column numbers above the board
@@ -37,7 +37,7 @@ public class ConsoleBoardViewPrinter implements BoardViewPrinter {
             for (int column = 0; column < boardView.getColumns(); column++) {
                 // Print each cell
                 CellView cell = boardView.getCells()[row][column];
-                stringJoiner.add(cellPrinter.print(cell));
+                stringJoiner.add(cellFormatter.format(cell));
             }
             sb.append(stringJoiner);
         }

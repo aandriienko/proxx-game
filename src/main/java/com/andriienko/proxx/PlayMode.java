@@ -1,4 +1,4 @@
-package com.andriienko.proxx.common;
+package com.andriienko.proxx;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

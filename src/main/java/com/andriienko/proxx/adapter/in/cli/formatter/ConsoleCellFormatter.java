@@ -1,19 +1,17 @@
-package com.andriienko.proxx.application.cli;
+package com.andriienko.proxx.adapter.in.cli.formatter;
 
 import com.andriienko.proxx.application.dto.CellView;
-import com.andriienko.proxx.application.printer.CellPrinter;
-import com.andriienko.proxx.common.PlayMode;
+import com.andriienko.proxx.adapter.in.formatter.CellFormatter;
 
-public class ConsoleCellPrinter implements CellPrinter {
+public class ConsoleCellFormatter implements CellFormatter {
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLACK = "\u001B[30m";
     private static final String ANSI_RED = "\u001B[91m";
     private static final String ANSI_YELLOW = "\u001B[93m";
     private static final String ANSI_BLUE = "\u001B[94m";
 
-
     @Override
-    public String print(CellView cell) {
+    public String format(CellView cell) {
         if(cell == null) {
             return "";
         }
@@ -32,7 +30,8 @@ public class ConsoleCellPrinter implements CellPrinter {
         } else {
             cellString =  ANSI_YELLOW + "*" + ANSI_RESET;
         }
-         // %-12s - ANSI COLORS counts as characters, even invisible
+         /* %-12s - offset to match header and footer
+              ANSI COLORS counts as characters, even invisible */
         return String.format("%-12s", cellString);
     }
 }
