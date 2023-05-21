@@ -11,9 +11,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
+import static com.andriienko.proxx.TestUtils.forEachCell;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -37,30 +36,7 @@ public class BoardTest {
         assertEquals(BOARD_DIMENSION_SIZE, board.getColumns());
         assertNotNull(board.getCells());
         assertEquals(GameStatus.IN_PROGRESS, board.getStatus());
-        forEachCell(Assertions::assertNotNull);
-    }
-
-    @ParameterizedTest
-    @CsvSource({"0,1", "1,0"})
-    @DisplayName("Exception is thrown when wrong lower boundary")
-    void shouldThrowExceptionDuringInitWhenWrongRowsLowerBoundary(int rows, int columns) {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> new Board(rows, columns),
-                "Invalid board dimensions. Board should contain at least 1 row and 1 column"
-        );
-    }
-
-    @ParameterizedTest
-    @CsvSource({"101,1", "1,101"})
-    @DisplayName("Exception is thrown when wrong upper boundary")
-    void shouldThrowExceptionDuringInitWhenWrongRowsUpperBoundary(int rows, int columns) {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> new Board(rows, columns),
-                "Invalid board dimensions. Board should contain at most 100 rows and 100 columns"
-        );
-
+        forEachCell(board, Assertions::assertNotNull);
     }
 
     @ParameterizedTest
@@ -95,9 +71,7 @@ public class BoardTest {
     @Test
     @DisplayName("Increases black hole counters when new black hole is placed")
     void shouldIncreaseBlackHoleCounters() {
-        forEachCell(c -> {
-            assertEquals(0, c.getAdjacentBlackHolesCount());
-        });
+        forEachCell(board, c -> assertEquals(0, c.getAdjacentBlackHolesCount()));
         List<Cell> cells = List.of(
                 board.getCellAt(0, 0),
                 board.getCellAt(0, 2),
@@ -145,98 +119,32 @@ public class BoardTest {
     }
 
     @Test
-    @DisplayName("Places multiple black holes")
-    void shouldPlaceMultipleBlackHoles() {
-        int expectedBlackHoles = 5;
-        board.placeBlackHoles(expectedBlackHoles);
-        AtomicInteger actualBlackHoles = new AtomicInteger();
-        forEachCell(c -> {
-            if (c.isBlackHole()) {
-                actualBlackHoles.getAndIncrement();
-            }
-        });
-        assertEquals(expectedBlackHoles, actualBlackHoles.get());
-        assertEquals(expectedBlackHoles, board.getNumberOfBlackHoles());
-    }
-
-    @Test
-    @DisplayName("Exception is thrown if insufficient black holes")
-    void shouldFailPlaceMultipleBlackHolesWhenInsufficientBlackHoles() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> board.placeBlackHoles(0),
-                "Board should contain at least 1 black hole"
-        );
-    }
-
-    @Test
-    @DisplayName("Exception is thrown if too much black holes")
-    void shouldFailPlaceMultipleBlackHolesWhenTooMuchBlackHoles() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> board.placeBlackHoles(9),
-                "Board should contain at least 1 cell"
-        );
-    }
-
-    @Test
     @DisplayName("On black hole open should lose")
     void shouldLSetBlackHoleOpenedFlagAndOpenAllCells() {
         Position position = new Position(1, 1);
         board.placeBlackHole(position);
-        forEachCell(c -> assertFalse(c.isOpened()));
+        forEachCell(board, c -> assertFalse(c.isOpened()));
         assertFalse(board.isBlackHoleOpened());
 
         board.openCell(position);
 
-        forEachCell(c -> assertTrue(c.isOpened()));
+        forEachCell(board, c -> assertTrue(c.isOpened()));
         assertTrue(board.isBlackHoleOpened());
         assertEquals(GameStatus.LOSE, board.getStatus());
     }
 
-    private void forEachCell(Consumer<Cell> action) {
-        for (int row = 0; row < BOARD_DIMENSION_SIZE; row++) {
-            for (int column = 0; column < BOARD_DIMENSION_SIZE; column++) {
-                action.accept(board.getCellAt(row, column));
-            }
-        }
-    }
-
-    /*
-    void openSafeCells(Cell rootCell) {
-        if (rootCell.isBlackHole()) {
-            return;
-        }
-        Queue<Cell> cells = new LinkedList<>();
-        cells.add(rootCell);
-        while (!cells.isEmpty()) {
-            Cell cell = cells.poll();
-            cell.markAsOpened();
-            if (cell.isEmpty()) {
-                List<Cell> adjacentCells = getAdjacentCells(cell);
-                cells.addAll(adjacentCells.stream()
-                        .filter(Predicate.not(Cell::isOpened))
-                        .toList());
-                adjacentCells.forEach(Cell::markAsOpened);
-            }
-            numberOfOpenedCells++;
-        }
-    }
-     */
     @Test
     @DisplayName("Should open single cell if root cell non-empty ")
     void shouldOpenSingLeCellIfNonEmpty() {
         board.placeBlackHole(new Position(1, 2));
 
-        forEachCell(c -> {
-            assertFalse(c.isOpened());
-        });
+        forEachCell(board, c -> assertFalse(c.isOpened()));
         assertEquals(0, board.getNumberOfOpenedCells());
 
         final Cell rootCell = board.getCellAt(1, 1);
         board.openCell(rootCell.getPosition());
 
-        forEachCell(c -> {
+        forEachCell(board, c -> {
             if (c == rootCell) {
                 assertTrue(c.isOpened());
             } else {
@@ -251,7 +159,7 @@ public class BoardTest {
     @DisplayName("Opens root cell and its empty neighbors")
     public void shouldOpenRootAndEmptyNeighbors() {
         board.placeBlackHole(new Position(1, 2));
-        forEachCell(c -> assertFalse(c.isOpened()));
+        forEachCell(board, c -> assertFalse(c.isOpened()));
         assertEquals(0, board.getNumberOfOpenedCells());
 
         Cell rootCell = board.getCellAt(0, 0);
@@ -264,7 +172,7 @@ public class BoardTest {
                 board.getCellAt(1, 1),
                 board.getCellAt(2, 1));
 
-        forEachCell(c -> {
+        forEachCell(board, c -> {
             if (expectedOpened.contains(c)) {
                 assertTrue(c.isOpened());
             } else {
@@ -280,13 +188,13 @@ public class BoardTest {
     public void shouldLeadToWin() {
         Cell blackHole = board.getCellAt(2, 2);
         board.placeBlackHole(blackHole.getPosition());
-        forEachCell(c -> assertFalse(c.isOpened()));
+        forEachCell(board, c -> assertFalse(c.isOpened()));
         assertEquals(0, board.getNumberOfOpenedCells());
 
         Cell rootCell = board.getCellAt(0, 0);
         board.openCell(rootCell.getPosition());
 
-        forEachCell(c -> {
+        forEachCell(board, c -> {
             if (c == blackHole) {
                 assertFalse(c.isOpened());
             } else {

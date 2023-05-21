@@ -71,7 +71,9 @@ public class CellTest {
         );
     }
 
-    @Test
+
+    //todo: move to renderer tests
+   /* @Test
     @DisplayName("A closed cell should be masked")
     void shouldMaskClosedCell() {
         assertEquals("-", cell.toString());
@@ -91,6 +93,6 @@ public class CellTest {
         cell.markAsOpened();
         cell.addAdjacentBlackHolesCount();
         assertEquals("1", cell.toString());
-    }
+    }*/
 
 }

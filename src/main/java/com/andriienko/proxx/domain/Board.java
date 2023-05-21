@@ -1,66 +1,42 @@
 package com.andriienko.proxx.domain;
 
+import com.andriienko.proxx.common.GameStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import com.andriienko.proxx.common.GameStatus;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Random;
-import java.util.Set;
 import java.util.function.Predicate;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter(AccessLevel.PACKAGE)
 public class Board {
-    private static final int MAX_DIMENSION_SIZE = 100;
+    @Getter(AccessLevel.PUBLIC)
     final int rows;
+
+    @Getter(AccessLevel.PUBLIC)
     final int columns;
-    final int boardSize;
+    final int size;
     final Cell[][] cells;
     int numberOfBlackHoles;
     int numberOfOpenedCells;
     boolean blackHoleOpened;
+
+    @Getter(AccessLevel.PUBLIC)
     GameStatus status;
 
     Board(int rows, int columns) {
-        if (rows < 1 || columns < 1) {
-            throw new IllegalArgumentException("Invalid board dimensions. Board should contain at least 1 row and 1 column");
-        }
-        if (rows > MAX_DIMENSION_SIZE || columns > MAX_DIMENSION_SIZE) {
-            throw new IllegalArgumentException(MessageFormat
-                    .format("Invalid board dimensions. Board should contain at most {0} rows and {0} columns", MAX_DIMENSION_SIZE));
-        }
         this.rows = rows;
         this.columns = columns;
         this.cells = new Cell[rows][columns];
         this.status = GameStatus.IN_PROGRESS;
-        this.boardSize = rows * columns;
+        this.size = rows * columns;
         for (int row = 0; row < rows; row++) {
             for (int column = 0; column < columns; column++) {
                 cells[row][column] = new Cell(row, column);
-            }
-        }
-    }
-
-    //todo: to service?
-    void placeBlackHoles(int numberOfBlackHoles) {
-        if (numberOfBlackHoles < 1) {
-            throw new IllegalArgumentException("Board should contain at least 1 black hole");
-        }
-        if (numberOfBlackHoles > boardSize - 1) {
-            throw new IllegalArgumentException("Board should contain at least 1 cell");
-        }
-        Random random = new Random();
-        int blackHolesCount = 0;
-        while (blackHolesCount < numberOfBlackHoles) {
-            Position position = new Position(random.nextInt(rows), random.nextInt(columns));
-            if (placeBlackHole(position)) {
-                blackHolesCount++;
             }
         }
     }
@@ -82,7 +58,7 @@ public class Board {
         Cell cell = getCellAt(position);
         if (cell.isBlackHole()) {
             blackHoleOpened = true;
-            numberOfOpenedCells = boardSize;
+            numberOfOpenedCells = size;
         } else {
             openSafeCells(position);
         }
@@ -115,7 +91,7 @@ public class Board {
         if (blackHoleOpened) {
             status = GameStatus.LOSE;
             openAll();
-        } else if (numberOfBlackHoles + numberOfOpenedCells == boardSize) {
+        } else if (numberOfBlackHoles + numberOfOpenedCells == size) {
             status = GameStatus.WIN;
         }
     }
@@ -177,7 +153,7 @@ public class Board {
         return getCellAt(position.getRow(), position.getColumn());
     }
 
-    Cell getCellAt(int row, int column) {
+    public Cell getCellAt(int row, int column) {
         if (!validBoundaries(row, column)) {
             throw new IllegalArgumentException("Cell is out of board");
         }

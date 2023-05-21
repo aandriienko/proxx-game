@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
  * the proxx board.
  */
 
-@Getter(AccessLevel.PACKAGE)
+@Getter(AccessLevel.PUBLIC)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(of = {"position"})
 public class Cell {
@@ -34,7 +34,7 @@ public class Cell {
         adjacentBlackHolesCount++;
     }
 
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return adjacentBlackHolesCount == 0;
     }
 
@@ -44,18 +44,5 @@ public class Cell {
 
     void markAsBlackHole() {
         isBlackHole = true;
-    }
-
-    @Override
-    public String toString() {
-        if (this.isOpened()) {
-            if (this.isBlackHole()) {
-                return "H";
-            } else {
-                return String.valueOf(this.getAdjacentBlackHolesCount());
-            }
-        } else {
-            return "-";
-        }
     }
 }
