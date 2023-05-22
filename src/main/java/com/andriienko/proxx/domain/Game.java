@@ -1,6 +1,6 @@
 package com.andriienko.proxx.domain;
 
-import com.andriienko.proxx.GameStatus;
+import com.andriienko.proxx.enums.GameStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 

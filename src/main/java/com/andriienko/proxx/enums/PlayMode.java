@@ -1,4 +1,4 @@
-package com.andriienko.proxx;
+package com.andriienko.proxx.enums;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
