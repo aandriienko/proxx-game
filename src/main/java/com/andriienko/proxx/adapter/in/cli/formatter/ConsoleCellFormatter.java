@@ -15,7 +15,6 @@ public class ConsoleCellFormatter implements CellFormatter {
         if(cell == null) {
             return "";
         }
-
         String cellString;
         if (cell.isOpened()) {
             if (cell.isBlackHole()) {

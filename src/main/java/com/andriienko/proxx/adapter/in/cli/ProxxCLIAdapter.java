@@ -35,7 +35,7 @@ public class ProxxCLIAdapter implements ProxxUIAdapter {
                 1. Easy
                 2. Medium
                 3. Expert
-                4. Custom
+                4. Custom: side is from  3 to 50 and black holes number... well at least leave 1 cell
                 """;
         System.out.println(options);
     }
@@ -44,9 +44,8 @@ public class ProxxCLIAdapter implements ProxxUIAdapter {
         PlayMode mode = getPlayMode();
         GameView gameView;
         if (mode == PlayMode.CUSTOM) {
-            //todo: by requirements i need the only 1 dimension ant it should not be greater lets say 50 (for console) and should be at least 3;
-            int boardSide = getIntInput(bs -> bs > PlayMode.EASY.getRows() && bs <= 50, "Board side: ");
-            int numberOfBlackHoles = getIntInput(bh -> bh > 1 && bh <= boardSide * boardSide - 1, "Black hole number: ");
+            int boardSide = getIntInput(bs -> bs > 2 && bs <= 50, "Board side: ");
+            int numberOfBlackHoles = getIntInput(bh -> bh > 1 && bh <= boardSide * boardSide - 1, "Black holes number: ");
             gameView = gameService.newGame(boardSide, boardSide, numberOfBlackHoles);
         } else {
             gameView = gameService.newGame(mode.getRows(), mode.getColumns(), mode.getBlackHoles());
@@ -55,7 +54,8 @@ public class ProxxCLIAdapter implements ProxxUIAdapter {
     }
 
     void gameLoop(GameView gameView) {
-        printBoard(gameView.getBoardView());
+        printBoard(gameView);
+
         do {
             BoardView finalBoardView = gameView.getBoardView();
             // Let's allow user to enter 1-based coordinates)
@@ -64,7 +64,7 @@ public class ProxxCLIAdapter implements ProxxUIAdapter {
             int column = getIntInput(c -> c > 0 && c <= finalBoardView.getColumns(),
                     "Col (q for exit): ");
             gameView = gameService.openCell(row - 1, column - 1);
-            printBoard(gameView.getBoardView());
+            printBoard(gameView);
         } while (gameView.getStatus() == GameStatus.IN_PROGRESS);
 
         if (gameView.getStatus() == GameStatus.WIN) {
@@ -78,10 +78,11 @@ public class ProxxCLIAdapter implements ProxxUIAdapter {
         run();
     }
 
-    private void printBoard(BoardView boardView) {
+    private void printBoard(GameView gameView) {
         System.out.println("\n\n");
         clearScreen();
-        System.out.println(boardViewFormatter.format(boardView));
+        System.out.println(boardViewFormatter.format(gameView.getBoardView()));
+        System.out.printf("Opened %d of %d with %d black holes!%n%n", gameView.getNumberOfOpenedCells(), gameView.getSize(), gameView.getBlackHolesNumber());
     }
 
     private void printBanner() {
@@ -104,8 +105,8 @@ public class ProxxCLIAdapter implements ProxxUIAdapter {
     private PlayMode getPlayMode() {
         PlayMode playMode = null;
         while (playMode == null) {
-            System.out.print("Enter play mode mode (q for exit): ");
-            String input = getStringOrQuit(scanner);
+            System.out.print("Choose play mode (q for exit): ");
+            String input = getStringOrQuit();
             switch (input) {
                 case "1" -> playMode = PlayMode.EASY;
                 case "2" -> playMode = PlayMode.MEDIUM;
@@ -116,8 +117,8 @@ public class ProxxCLIAdapter implements ProxxUIAdapter {
         return playMode;
     }
 
-    private String getStringOrQuit(Scanner scan) {
-        String input = scan.nextLine();
+    private String getStringOrQuit() {
+        String input = scanner.nextLine();
         if (input.equalsIgnoreCase("q")) {
             System.out.println("Thanks for playing! Goodbye!");
             System.exit(0);
@@ -130,23 +131,14 @@ public class ProxxCLIAdapter implements ProxxUIAdapter {
         while (!predicate.test(input)) {
             System.out.print(promptMessage);
             if (!scanner.hasNextInt()) {
-                 getStringOrQuit(scanner);
-                continue;
+                 getStringOrQuit();
+            } else {
+                input = scanner.nextInt();
+                scanner.nextLine();
             }
-            input = scanner.nextInt();
         }
-
-        /*do {
-            if (!scanner.hasNextInt()) {
-                getStringOrQuit(scanner);
-                continue;
-            }
-            System.out.print(promptMessage);
-            input = scanner.nextInt();
-        } while (!predicate.test(input));*/
         return input;
     }
-
 
     /**
      *  Not all CLI supports this
