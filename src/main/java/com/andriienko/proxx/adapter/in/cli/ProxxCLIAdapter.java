@@ -19,6 +19,7 @@ public class ProxxCLIAdapter implements ProxxUIAdapter {
     private final InputResolver inputResolver;
 
     public void run() {
+        gamePrinter.clearScreen();
         gamePrinter.printMainMenu();
         gameLoop(createGame());
     }
