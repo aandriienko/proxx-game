@@ -47,7 +47,7 @@ public class Board {
                /   |  \
             S.W    S   S.E
 
-       Cell-->Current Cell (row, col)
+        Cell-->Current Cell (row, col)
 
         N.W--> North-West   (row-1, col-1)
         N -->  North        (row-1, col)
@@ -58,7 +58,6 @@ public class Board {
         S -->  South        (row+1, col)
         S.E--> South-East   (row+1, col+1)
     */
-    //business rule
     public void visitAdjacentCells(int row, int column, Consumer<Cell> action) {
         int minRow = Math.max(0, row - 1);
         int maxRow = Math.min(rows - 1, row + 1);

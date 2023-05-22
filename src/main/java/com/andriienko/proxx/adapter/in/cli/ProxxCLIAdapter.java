@@ -3,36 +3,32 @@ package com.andriienko.proxx.adapter.in.cli;
 import com.andriienko.proxx.adapter.in.ProxxUIAdapter;
 import com.andriienko.proxx.adapter.in.printer.GamePrinter;
 import com.andriienko.proxx.adapter.in.resolver.InputResolver;
-import com.andriienko.proxx.application.dto.BoardView;
 import com.andriienko.proxx.application.dto.GameView;
 import com.andriienko.proxx.application.port.in.PlayGameUseCase;
 import com.andriienko.proxx.enums.GameStatus;
 import com.andriienko.proxx.enums.PlayMode;
 import lombok.AllArgsConstructor;
 
+import java.util.function.Predicate;
+
 @AllArgsConstructor
 public class ProxxCLIAdapter implements ProxxUIAdapter {
 
     private final PlayGameUseCase gameService;
     private final GamePrinter gamePrinter;
-    private final InputResolver consoleInputResolver;
+    private final InputResolver inputResolver;
 
     public void run() {
         gamePrinter.printMainMenu();
         gameLoop(createGame());
     }
 
-    private void gameLoop(GameView gameView) {
+    private void gameLoop(final GameView gameView) {
         gamePrinter.printBoard(gameView);
         do {
-            BoardView finalBoardView = gameView.getBoardView();
-            // Let's allow user to enter 1-based coordinates)
-            int row = consoleInputResolver.getIntegerInput((r -> r > 0 && r <= finalBoardView.getRows()),
-                    "Row (q for exit): ");
-            int column = consoleInputResolver.getIntegerInput(c -> c > 0 && c <= finalBoardView.getColumns(),
-                    "Col (q for exit): ");
-            gameView = gameService.openCell(row - 1, column - 1);
-            gamePrinter.printBoard(gameView);
+            int row = inputResolver.getIntegerInput(isValidRowNumber(gameView), "Row (q for exit): ");
+            int column = inputResolver.getIntegerInput(isValidColumnNumber(gameView), "Col (q for exit): ");
+            gamePrinter.printBoard(gameService.openCell(row - 1, column - 1));
         } while (gameView.getStatus() == GameStatus.IN_PROGRESS);
 
         if (gameView.getStatus() == GameStatus.WIN) {
@@ -47,16 +43,31 @@ public class ProxxCLIAdapter implements ProxxUIAdapter {
     }
 
     private GameView createGame() {
-        PlayMode mode = consoleInputResolver.getPlayMode();
+        PlayMode mode = inputResolver.getPlayMode();
         GameView gameView;
         if (mode == PlayMode.CUSTOM) {
-            int boardSide = consoleInputResolver.getIntegerInput(bs -> bs > 2 && bs <= 50, "Board side: ");
-            int numberOfBlackHoles = consoleInputResolver.getIntegerInput(bh -> bh > 1 && bh <= boardSide * boardSide - 1, "Black holes number: ");
-            gameView = gameService.newGame(boardSide, boardSide, numberOfBlackHoles);
+            int boardSide = inputResolver.getIntegerInput(isValidBoardSide(), "Board side: ");
+            int blackHolesNumber = inputResolver.getIntegerInput(isValidBlackHolesNumber(boardSide), "Black holes number: ");
+            gameView = gameService.newGame(boardSide, boardSide, blackHolesNumber);
         } else {
             gameView = gameService.newGame(mode.getRows(), mode.getColumns(), mode.getBlackHoles());
         }
         return gameView;
     }
 
+    private Predicate<Integer> isValidRowNumber(GameView gameView) {
+        return row -> row > 0 && row <= gameView.getBoardView().getRows();
+    }
+
+    private Predicate<Integer> isValidColumnNumber(GameView gameView) {
+        return column -> column > 0 && column <= gameView.getBoardView().getColumns();
+    }
+
+    private Predicate<Integer> isValidBoardSide() {
+        return boardSide -> boardSide > 2 && boardSide < 50;
+    }
+
+    private Predicate<Integer> isValidBlackHolesNumber(int boardSide) {
+        return blackHolesNumber -> blackHolesNumber > 1 && blackHolesNumber < boardSide * boardSide - 1;
+    }
 }

@@ -3,7 +3,6 @@ package com.andriienko.proxx.domain;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.experimental.FieldDefaults;
 
 /**
  * Class Cell:
@@ -12,16 +11,14 @@ import lombok.experimental.FieldDefaults;
  */
 
 @Getter(AccessLevel.PUBLIC)
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(of = {"row", "column"})
 public class Cell {
-    final int row;
-    final int column;
-    boolean isOpened;
-    boolean isBlackHole;
-    int adjacentBlackHolesCount;
+    private final int row;
+    private final int column;
+    private boolean isOpened;
+    private boolean isBlackHole;
+    private int adjacentBlackHolesCount;
 
-    //todo: private constructor + factory methods: for bh and regular, bh - final
     public Cell(int row, int column) {
         this.row = row;
         this.column = column;

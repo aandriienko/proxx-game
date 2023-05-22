@@ -71,28 +71,4 @@ public class CellTest {
         );
     }
 
-
-    //todo: move to renderer tests
-   /* @Test
-    @DisplayName("A closed cell should be masked")
-    void shouldMaskClosedCell() {
-        assertEquals("-", cell.toString());
-    }
-
-    @Test
-    @DisplayName("A black hole should be show special value")
-    void shouldMaskBlackHoleCell() {
-        cell.markAsOpened();
-        cell.markAsBlackHole();
-        assertEquals("H", cell.toString());
-    }
-
-    @Test
-    @DisplayName("An opened cell should show number of adjacent black holes")
-    void shouldShowCountOfAdjacentBlackHoles() {
-        cell.markAsOpened();
-        cell.addAdjacentBlackHolesCount();
-        assertEquals("1", cell.toString());
-    }*/
-
 }

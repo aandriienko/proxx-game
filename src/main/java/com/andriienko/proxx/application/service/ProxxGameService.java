@@ -8,14 +8,11 @@ import com.andriienko.proxx.application.port.out.GameRepository;
 import com.andriienko.proxx.domain.Board;
 import com.andriienko.proxx.domain.Cell;
 import com.andriienko.proxx.domain.Game;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.experimental.FieldDefaults;
 
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProxxGameService implements PlayGameUseCase {
-    GameRepository gameRepository;
+    private final GameRepository gameRepository;
 
     public GameView newGame(int rows, int columns, int blackHoles) {
         Game game = new Game(rows, columns);
