@@ -16,7 +16,7 @@ public class ConsoleGamePrinter implements GamePrinter {
                 1. Easy
                 2. Medium
                 3. Expert
-                4. Custom: side is from  3 to 50 and black holes number... well at least leave 1 cell
+                4. Custom: side is from 3 to 50 and black holes number... Well at least leave 1 cell
                 """;
         System.out.println(options);
     }

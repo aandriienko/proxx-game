@@ -23,12 +23,13 @@ public class ProxxCLIAdapter implements ProxxUIAdapter {
         gameLoop(createGame());
     }
 
-    private void gameLoop(final GameView gameView) {
+    private void gameLoop(GameView gameView) {
         gamePrinter.printBoard(gameView);
         do {
             int row = inputResolver.getIntegerInput(isValidRowNumber(gameView), "Row (q for exit): ");
             int column = inputResolver.getIntegerInput(isValidColumnNumber(gameView), "Col (q for exit): ");
-            gamePrinter.printBoard(gameService.openCell(row - 1, column - 1));
+            gameView = gameService.openCell(row - 1, column - 1);
+            gamePrinter.printBoard(gameView);
         } while (gameView.getStatus() == GameStatus.IN_PROGRESS);
 
         if (gameView.getStatus() == GameStatus.WIN) {
@@ -64,7 +65,7 @@ public class ProxxCLIAdapter implements ProxxUIAdapter {
     }
 
     private Predicate<Integer> isValidBoardSide() {
-        return boardSide -> boardSide > 2 && boardSide < 50;
+        return boardSide -> boardSide > 2 && boardSide <= 50;
     }
 
     private Predicate<Integer> isValidBlackHolesNumber(int boardSide) {
