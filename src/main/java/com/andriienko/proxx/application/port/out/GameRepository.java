@@ -4,5 +4,5 @@ import com.andriienko.proxx.domain.Game;
 
 public interface GameRepository {
     Game get();
-    void save(Game game);
+    Game save(Game game);
 }

@@ -8,7 +8,6 @@ import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Random;
 import java.util.Set;
 
 @Getter(AccessLevel.PUBLIC)
@@ -21,38 +20,24 @@ public class Game {
 
     private final int size;
     private final Board board;
-    private int numberOfOpenedCells;
+    private final int maxBlackHolesNumber;
+    private int openedCellsNumber;
     private int blackHolesNumber;
     private boolean blackHoleOpened;
     private GameStatus status;
 
-    public Game(int rows, int columns) {
+    Game(int rows, int columns) {
         size = rows * columns;
+        maxBlackHolesNumber = size - 1;
         validateDimensions(rows, columns);
         board = new Board(rows, columns);
         status = GameStatus.IN_PROGRESS;
     }
 
-    /**
-     *     Deferred init improves testability
-     */
-    public Game start(int blackHolesNumber) {
-        placeBlackHoles(board, blackHolesNumber);
-        return this;
-    }
-
-    private void placeBlackHoles(Board board, int blackHolesNumber) {
-        validateBlackHolesNumber(size - 1, blackHolesNumber);
-        Random random = new Random();
-        int blackHolesCount = 0;
-        while (blackHolesCount < blackHolesNumber) {
-            if (placeBlackHole(random.nextInt(board.getRows()), random.nextInt(board.getColumns()))) {
-                blackHolesCount++;
-            }
-        }
-    }
-
     public boolean placeBlackHole(int row, int column) {
+        if (blackHolesNumber >= maxBlackHolesNumber) {
+            throw new IllegalArgumentException("Too much mines. Board should contain at least 1 cell");
+        }
         Cell cell = board.getCellAt(row, column);
         if (cell.isBlackHole()) {
             return false;
@@ -67,7 +52,7 @@ public class Game {
         Cell cell = board.getCellAt(row, column);
         if (cell.isBlackHole()) {
             blackHoleOpened = true;
-            numberOfOpenedCells = size;
+            openedCellsNumber = size;
         } else {
             openSafeCells(row, column);
         }
@@ -78,7 +63,7 @@ public class Game {
         if (blackHoleOpened) {
             status = GameStatus.LOSE;
             openAll();
-        } else if (blackHolesNumber + numberOfOpenedCells == size) {
+        } else if (blackHolesNumber + openedCellsNumber == size) {
             status = GameStatus.WIN;
         }
     }
@@ -106,7 +91,7 @@ public class Game {
         while (!cells.isEmpty()) {
             Cell cell = cells.poll();
             cell.markAsOpened();
-            if (cell.isEmpty() ) {
+            if (cell.isEmpty()) {
                 board.visitAdjacentCells(cell.getRow(), cell.getColumn(), adjacentCell -> {
                     if (!adjacentCell.isOpened() && !adjacentCell.isBlackHole() && !cellsAdded.contains(adjacentCell)) {
                         cells.add(adjacentCell);
@@ -114,7 +99,7 @@ public class Game {
                     }
                 });
             }
-            numberOfOpenedCells++;
+            openedCellsNumber++;
         }
 
     }
@@ -127,15 +112,6 @@ public class Game {
         if (rows > MAX_DIMENSION_SIZE || columns > MAX_DIMENSION_SIZE) {
             throw new IllegalArgumentException(MessageFormat
                     .format("Invalid board dimensions. Board should contain at most {0} rows and {0} columns", MAX_DIMENSION_SIZE));
-        }
-    }
-
-    private void validateBlackHolesNumber(int maxBlackHolesNumber, int blackHolesNumber) {
-        if (blackHolesNumber < 1) {
-            throw new IllegalArgumentException("Board should contain at least 1 black hole");
-        }
-        if (blackHolesNumber > maxBlackHolesNumber) {
-            throw new IllegalArgumentException("Board should contain at least 1 cell");
         }
     }
 }

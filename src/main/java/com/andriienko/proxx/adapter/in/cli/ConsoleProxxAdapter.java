@@ -1,6 +1,6 @@
 package com.andriienko.proxx.adapter.in.cli;
 
-import com.andriienko.proxx.adapter.in.ProxxUIAdapter;
+import com.andriienko.proxx.adapter.in.UIProxxAdapter;
 import com.andriienko.proxx.adapter.in.printer.GamePrinter;
 import com.andriienko.proxx.adapter.in.resolver.InputResolver;
 import com.andriienko.proxx.application.dto.GameView;
@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 import java.util.function.Predicate;
 
 @AllArgsConstructor
-public class ProxxCLIAdapter implements ProxxUIAdapter {
+public class ConsoleProxxAdapter implements UIProxxAdapter {
 
     private final PlayGameUseCase gameService;
     private final GamePrinter gamePrinter;

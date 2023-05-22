@@ -42,7 +42,7 @@ public class ConsoleGamePrinter implements GamePrinter {
         System.out.println("\n\n");
         clearScreen();
         System.out.println(boardViewFormatter.format(gameView.getBoardView()));
-        System.out.printf("Opened %d of %d with %d black holes!%n%n", gameView.getNumberOfOpenedCells(), gameView.getSize(), gameView.getBlackHolesNumber());
+        System.out.printf("Opened %d of %d with %d black holes!%n%n", gameView.getOpenedCellsNumber(), gameView.getSize(), gameView.getBlackHolesNumber());
     }
 
     /**

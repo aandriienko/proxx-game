@@ -9,12 +9,12 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.andriienko.proxx.TestUtils.BOARD_DIMENSION_SIZE;
 import static com.andriienko.proxx.TestUtils.forEachCell;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,6 +28,16 @@ public class GameTest {
         game = new Game(3, 3);
         board = game.getBoard();
     }
+
+    @Test
+    @DisplayName("Should init variables correctly during creation")
+    void shouldInitCorrectly() {
+        assertEquals(9, game.getSize());
+        assertEquals(8, game.getMaxBlackHolesNumber());
+        assertNotNull(board);
+        assertEquals(GameStatus.IN_PROGRESS, game.getStatus());
+    }
+
     @Test
     @DisplayName("Places black hole to specified cell")
     void shouldPlaceBlackHoleToCell() {
@@ -49,49 +59,13 @@ public class GameTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"101,1", "1,101"})
+    @CsvSource({"101,3", "3,101"})
     @DisplayName("Exception is thrown when wrong upper boundary")
     void shouldThrowExceptionDuringInitWhenWrongRowsUpperBoundary(int rows, int columns) {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Game(rows, columns),
                 "Invalid board dimensions. Board should contain at most 100 rows and 100 columns"
-        );
-    }
-
-    @Test
-    @DisplayName("Places multiple random black holes")
-    void shouldPlaceMultipleRandomBlackHoles() {
-        int expectedBlackHoles = 5;
-        Game game = new Game(BOARD_DIMENSION_SIZE, BOARD_DIMENSION_SIZE);
-        game.start(expectedBlackHoles);
-        AtomicInteger actualBlackHoles = new AtomicInteger();
-        forEachCell(game.getBoard(), c -> {
-            if (c.isBlackHole()) {
-                actualBlackHoles.set(actualBlackHoles.get() + 1);
-            }
-        });
-        assertEquals(expectedBlackHoles, actualBlackHoles.get());
-        assertEquals(expectedBlackHoles, game.getBlackHolesNumber());
-    }
-
-    @Test
-    @DisplayName("Exception is thrown if insufficient black holes")
-    void shouldFailPlaceMultipleBlackHolesWhenInsufficientBlackHoles() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> game.start(0),
-                "Board should contain at least 1 black hole"
-        );
-    }
-
-    @Test
-    @DisplayName("Exception is thrown if too much black holes")
-    void shouldFailPlaceMultipleBlackHolesWhenTooMuchBlackHoles() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> game.start(9),
-                "Board should contain at least 1 cell"
         );
     }
 
@@ -144,6 +118,16 @@ public class GameTest {
     }
 
     @Test
+    @DisplayName("Exception is thrown if too much black holes placed")
+    void shouldFailPlaceMultipleBlackHolesWhenTooMuchBlackHoles() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> forEachCell(game.getBoard(), cell -> game.placeBlackHole(cell.getRow(), cell.getColumn())),
+                "Board should contain at least 1 cell"
+        );
+    }
+
+    @Test
     @DisplayName("On black hole open should lose")
     void shouldLSetBlackHoleOpenedFlagAndOpenAllCells() {
         int row = 1;
@@ -165,7 +149,7 @@ public class GameTest {
         game.placeBlackHole(1, 2);
 
         forEachCell(board, c -> assertFalse(c.isOpened()));
-        assertEquals(0, game.getNumberOfOpenedCells());
+        assertEquals(0, game.getOpenedCellsNumber());
 
 
         final Cell rootCell = board.getCellAt(1, 1);
@@ -178,7 +162,7 @@ public class GameTest {
                 assertFalse(c.isOpened());
             }
         });
-        assertEquals(1, game.getNumberOfOpenedCells());
+        assertEquals(1, game.getOpenedCellsNumber());
         assertEquals(GameStatus.IN_PROGRESS, game.getStatus());
     }
 
@@ -187,7 +171,7 @@ public class GameTest {
     public void shouldOpenRootAndEmptyNeighbors() {
         game.placeBlackHole(1, 2);
         forEachCell(board, c -> assertFalse(c.isOpened()));
-        assertEquals(0, game.getNumberOfOpenedCells());
+        assertEquals(0, game.getOpenedCellsNumber());
 
         Cell rootCell = board.getCellAt(0, 0);
         game.openCell(rootCell.getRow(), rootCell.getColumn());
@@ -206,7 +190,7 @@ public class GameTest {
                 assertFalse(c.isOpened());
             }
         });
-        assertEquals(6, game.getNumberOfOpenedCells());
+        assertEquals(6, game.getOpenedCellsNumber());
         assertEquals(GameStatus.IN_PROGRESS, game.getStatus());
     }
 
@@ -220,7 +204,7 @@ public class GameTest {
         Cell blackHole = board.getCellAt(2, 2);
         game.placeBlackHole(blackHole.getRow(), blackHole.getColumn());
         forEachCell(board, c -> assertFalse(c.isOpened()));
-        assertEquals(0, game.getNumberOfOpenedCells());
+        assertEquals(0, game.getOpenedCellsNumber());
 
         game.openCell(0, 0);
 
@@ -231,7 +215,7 @@ public class GameTest {
                 assertTrue(c.isOpened());
             }
         });
-        assertEquals(8, game.getNumberOfOpenedCells());
+        assertEquals(8, game.getOpenedCellsNumber());
         assertEquals(GameStatus.WIN, game.getStatus());
     }
 
