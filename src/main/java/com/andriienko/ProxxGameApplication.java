@@ -1,7 +1,7 @@
 package com.andriienko;
 
-import com.andriienko.proxx.adapter.in.UIProxxAdapter;
-import com.andriienko.proxx.adapter.in.cli.ConsoleProxxAdapter;
+import com.andriienko.proxx.adapter.in.ApplicationRunner;
+import com.andriienko.proxx.adapter.in.cli.ConsoleApplicationRunner;
 import com.andriienko.proxx.adapter.out.InMemorySingleGameRepository;
 import com.andriienko.proxx.application.mapper.GameMapper;
 import com.andriienko.proxx.application.port.in.PlayGameUseCase;
@@ -22,7 +22,7 @@ public class ProxxGameApplication {
         );
 
         BoardViewFormatter boardViewFormatter = new ColorBoardViewFormatter(new ColorCellViewFormatter());
-        UIProxxAdapter cliAdapter = new ConsoleProxxAdapter(
+        ApplicationRunner cliAdapter = new ConsoleApplicationRunner(
                 gameService,
                 new ConsoleInputResolver(),
                 new ConsoleUIFactory(boardViewFormatter)

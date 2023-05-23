@@ -10,12 +10,14 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
+/**
+ * The Game class represents a game of Proxx.
+ * It's responsible for managing the game state, including the placement of black holes and revealing cells, as well as determining the status of the game.
+ */
 @Getter(AccessLevel.PUBLIC)
 public class Game {
-    //min playable dimension
-    private static final int MIN_DIMENSION_SIZE = 3;
 
-    //I don't see more in existing games of such type
+    private static final int MIN_DIMENSION_SIZE = 3;
     private static final int MAX_DIMENSION_SIZE = 100;
 
     private final int size;
@@ -34,6 +36,13 @@ public class Game {
         status = GameStatus.IN_PROGRESS;
     }
 
+    /**
+     * Places single black hole on board and increases black hole counters for all adjacent cells
+     *
+     * @param row - zero based row coordinate
+     * @param column - zero based column coordinate
+     * @return false - when cell is already black hole, otherwise - true
+     */
     public boolean placeBlackHole(int row, int column) {
         if (blackHolesNumber >= maxBlackHolesNumber) {
             throw new IllegalArgumentException("Too much mines. Board should contain at least 1 cell");
@@ -48,6 +57,13 @@ public class Game {
         return true;
     }
 
+    /**
+     * Reveals the cell at row,column.<p>
+     * 1) For black holes just sets internal variables, that is used for status transition evaluation<p>
+     * 2) For non-black holes(safe) calls revealSafeCell method
+     * @param row - zero based row number coordinate
+     * @param column - zero based column number coordinate
+     */
     public void revealCell(int row, int column) {
         Cell cell = board.getCellAt(row, column);
         if (cell.isBlackHole()) {
@@ -59,6 +75,11 @@ public class Game {
         transitToStatus();
     }
 
+    /**
+     *  Manages game status:
+     *  <p>1. If black hole was opened - transits to LOSE status and reveals all cells
+     *  <p>2. If all cells were revealed (except black holes) - transits to WIN status
+     */
     private void transitToStatus() {
         if (blackHoleRevealed) {
             status = GameStatus.LOSE;
@@ -68,6 +89,9 @@ public class Game {
         }
     }
 
+    /**
+     *  Reveals all cells, without any status transition. Uses when black hole was opened
+     */
     private void revealAll() {
         for (int row = 0; row < board.getRows(); row++) {
             for (int column = 0; column < board.getColumns(); column++) {
@@ -79,6 +103,13 @@ public class Game {
         }
     }
 
+    /**
+     * Reveals only safe (non-black hole) cell.
+     * <p>1) For non-empty cell - just opens it.
+     * <p>2) For empty cell - uses BFS algorithm to open all connected empty cells
+     * @param row - zero based row coordinate
+     * @param column - zero based column coordinate
+     */
     private void revealSafeCells(int row, int column) {
         Cell rootCell = board.getCellAt(row, column);
         if (rootCell.isBlackHole()) {

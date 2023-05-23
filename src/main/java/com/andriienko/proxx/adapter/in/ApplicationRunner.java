@@ -1,5 +1,5 @@
 package com.andriienko.proxx.adapter.in;
 
-public interface UIProxxAdapter {
+public interface ApplicationRunner {
     void run();
 }

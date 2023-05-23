@@ -4,6 +4,12 @@ import com.andriienko.proxx.enums.PlayMode;
 import java.util.Scanner;
 import java.util.function.Predicate;
 
+/**
+ * This class is responsible for resolving the inputs from the console.
+ * It provides methods to get play mode and other integer inputs from the user via the console.
+ * It encapsulates the logic of user interaction and input validation, thus separating the concern of user input from other parts of the application.
+ * This class also manages the termination of the game if the user wishes to quit.
+ */
 public class ConsoleInputResolver implements InputResolver {
     private final Scanner scanner;
 
@@ -14,7 +20,7 @@ public class ConsoleInputResolver implements InputResolver {
     public PlayMode getPlayMode() {
         PlayMode playMode = null;
         while (playMode == null) {
-            System.out.print("Choose play mode (q for exit): ");
+            System.out.print("Choose play mode [1..4] (q for exit): ");
             String input = getStringOrQuit();
             switch (input) {
                 case "1" -> playMode = PlayMode.EASY;
@@ -24,15 +30,6 @@ public class ConsoleInputResolver implements InputResolver {
             }
         }
         return playMode;
-    }
-
-    public String getStringOrQuit() {
-        String input = scanner.nextLine();
-        if (input.equalsIgnoreCase("q")) {
-            System.out.println("Thanks for playing! Goodbye!");
-            System.exit(0);
-        }
-        return input;
     }
 
     public int getIntegerInput(Predicate<Integer> predicate, String promptMessage) {
@@ -45,6 +42,14 @@ public class ConsoleInputResolver implements InputResolver {
                 input = scanner.nextInt();
                 scanner.nextLine();
             }
+        }
+        return input;
+    }
+    private String getStringOrQuit() {
+        String input = scanner.nextLine();
+        if (input.equalsIgnoreCase("q")) {
+            System.out.println("Thanks for playing! Goodbye!");
+            System.exit(0);
         }
         return input;
     }

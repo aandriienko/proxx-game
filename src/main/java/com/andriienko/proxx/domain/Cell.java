@@ -6,10 +6,8 @@ import lombok.Getter;
 
 /**
  * Class Cell:
- * Represents the state information for a single cell on
- * the proxx board.
+ * Represents the state information for a single cell on the Proxx board.
  */
-
 @Getter(AccessLevel.PUBLIC)
 @EqualsAndHashCode(of = {"row", "column"})
 public class Cell {
@@ -19,7 +17,7 @@ public class Cell {
     private boolean isBlackHole;
     private int adjacentBlackHolesCount;
 
-    public Cell(int row, int column) {
+    Cell(int row, int column) {
         this.row = row;
         this.column = column;
         this.isBlackHole = false;

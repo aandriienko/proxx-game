@@ -5,7 +5,17 @@ import lombok.Getter;
 
 import java.util.function.Consumer;
 
-
+/**
+ *
+ * Class Board:
+ * Key responsibilities include:
+ * <p/>
+ * 1) Grid Management: The Board class maintains a 2D array of Cell objects.
+ * <p/>
+ * 2) Cell Access: It provides methods to access individual cells based on their row and column indices.
+ * <p/>
+ * 3)Adjacent cells interaction
+ */
 @Getter(AccessLevel.PACKAGE)
 public class Board {
     @Getter(AccessLevel.PUBLIC)
@@ -38,7 +48,10 @@ public class Board {
         return row >= 0 && column >= 0 && row < rows && column < columns;
     }
 
-    /*
+    /*   The following picture illustrates how visiting works
+         Math.max and Math.min functions ensure that the range of cells being considered stays within the boundaries of the board, and doesn't go beyond.
+
+
            N.W   N   N.E
               \   |   /
                \  |  /

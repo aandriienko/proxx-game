@@ -7,6 +7,12 @@ import lombok.AllArgsConstructor;
 
 import java.util.StringJoiner;
 
+/**
+ * This class formats the entire game board into a colored string representation that can be printed to the console.
+ * It leverages the ColorCellViewFormatter to format each cell of the board.
+ * It also includes additional formatting logic for printing row and column numbers.
+ * The purpose of this class is to transform the BoardView data object into a human-readable, console-compatible format.
+ */
 @AllArgsConstructor
 public class ColorBoardViewFormatter implements BoardViewFormatter {
 

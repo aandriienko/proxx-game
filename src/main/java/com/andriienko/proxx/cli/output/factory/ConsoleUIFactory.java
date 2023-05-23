@@ -5,6 +5,10 @@ import com.andriienko.proxx.cli.output.BoardViewFormatter;
 import com.andriienko.proxx.cli.output.UIFactory;
 import lombok.AllArgsConstructor;
 
+
+/**
+ *  This class is part of the application's output handling mechanism, focusing on creating a user interface for console-based execution.
+ */
 @AllArgsConstructor
 public class ConsoleUIFactory implements UIFactory {
 
