@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GameView {
-    int openedCellsNumber;
+    int revealedCellsNumber;
     int blackHolesNumber;
     int size;
     GameStatus status;

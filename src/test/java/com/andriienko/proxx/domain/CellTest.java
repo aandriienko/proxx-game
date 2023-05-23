@@ -22,7 +22,7 @@ public class CellTest {
     void shouldHaveCorrectInitialState() {
         assertEquals(0, cell.getRow());
         assertEquals(0, cell.getColumn());
-        assertFalse(cell.isOpened());
+        assertFalse(cell.isRevealed());
         assertFalse(cell.isBlackHole());
         assertEquals(0, cell.getAdjacentBlackHolesCount());
     }
@@ -44,11 +44,11 @@ public class CellTest {
     }
 
     @Test
-    @DisplayName("A cell should be marked as opened")
-    void shouldBeMarkedAsOpened() {
-        assertFalse(cell.isOpened());
-        cell.markAsOpened();
-        assertTrue(cell.isOpened());
+    @DisplayName("A cell should be marked as revealed")
+    void shouldBeMarkedAsRevealed() {
+        assertFalse(cell.isRevealed());
+        cell.markAsRevealed();
+        assertTrue(cell.isRevealed());
     }
 
     @Test

@@ -1,17 +1,16 @@
-package com.andriienko.proxx.adapter.in.cli.formatter;
+package com.andriienko.proxx.cli.output.formatter;
 
-import com.andriienko.proxx.adapter.in.formatter.BoardViewFormatter;
-import com.andriienko.proxx.adapter.in.formatter.CellFormatter;
 import com.andriienko.proxx.application.dto.BoardView;
 import com.andriienko.proxx.application.dto.CellView;
+import com.andriienko.proxx.cli.output.BoardViewFormatter;
 import lombok.AllArgsConstructor;
 
 import java.util.StringJoiner;
 
 @AllArgsConstructor
-public class ConsoleBoardViewFormatter implements BoardViewFormatter {
+public class ColorBoardViewFormatter implements BoardViewFormatter {
 
-    private final CellFormatter cellFormatter;
+    private final ColorCellViewFormatter cellFormatter;
 
     @Override
     public String format(BoardView boardView) {
@@ -36,7 +35,7 @@ public class ConsoleBoardViewFormatter implements BoardViewFormatter {
 
                 // Print each cell
                 CellView cell = boardView.getCells()[row][column];
-                stringJoiner.add(cellFormatter.format(cell));
+                stringJoiner.add(cellFormatter.createCellView(cell));
             }
             sb.append(stringJoiner);
         }

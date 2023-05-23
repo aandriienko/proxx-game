@@ -1,4 +1,4 @@
-package com.andriienko.proxx.adapter.in.formatter;
+package com.andriienko.proxx.cli.output;
 
 import com.andriienko.proxx.application.dto.BoardView;
 

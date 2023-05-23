@@ -1,28 +1,26 @@
-package com.andriienko.proxx.adapter.in.cli.printer;
+package com.andriienko.proxx.cli.output.factory;
 
-import com.andriienko.proxx.adapter.in.formatter.BoardViewFormatter;
-import com.andriienko.proxx.adapter.in.printer.GamePrinter;
-import com.andriienko.proxx.application.dto.GameView;
+import com.andriienko.proxx.application.dto.BoardView;
+import com.andriienko.proxx.cli.output.BoardViewFormatter;
+import com.andriienko.proxx.cli.output.UIFactory;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class ConsoleGamePrinter implements GamePrinter {
+public class ConsoleUIFactory implements UIFactory {
 
     private final BoardViewFormatter boardViewFormatter;
 
-    public void printMainMenu() {
-        printBanner();
-        String options = """
+    public String createMainMenu() {
+        return """
                 1. Easy
                 2. Medium
                 3. Expert
                 4. Custom: side is from 3 to 50 and black holes number... Well at least leave 1 cell
                 """;
-        System.out.println(options);
     }
 
-    public void printBanner() {
-        String banner = """
+    public String createBanner() {
+        return """
                  ________  ________  ________     ___    ___ ___    ___       _______  ________    _______  ________    \s
                 |\\   __  \\|\\   __  \\|\\   __  \\   |\\  \\  /  /|\\  \\  /  /|     /  ___  \\|\\   __  \\  /  ___  \\|\\_____  \\   \s
                 \\ \\  \\|\\  \\ \\  \\|\\  \\ \\  \\|\\  \\  \\ \\  \\/  / | \\  \\/  / /    /__/|_/  /\\ \\  \\|\\  \\/__/|_/  /\\|____|\\ /_  \s
@@ -32,24 +30,10 @@ public class ConsoleGamePrinter implements GamePrinter {
                     \\|__|     \\|__|\\|__|\\|_______/__/ /\\ __\\/__/ /\\ __\\         \\|_______|\\|_______| \\|_______|\\|_______|
                                                  |__|/ \\|__||__|/ \\|__|                                                 \s
                                                                                                                         \s
-                                                                                                                                        """;
-
-        System.out.println(banner);
-        System.out.println();
+                """;
     }
 
-    public void printBoard(GameView gameView) {
-        System.out.println("\n\n");
-        clearScreen();
-        System.out.println(boardViewFormatter.format(gameView.getBoardView()));
-        System.out.printf("Opened %d of %d with %d black holes!%n%n", gameView.getOpenedCellsNumber(), gameView.getSize(), gameView.getBlackHolesNumber());
-    }
-
-    /**
-     * Not all CLI supports this
-     */
-    public void clearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+    public String createBoard(BoardView boardView) {
+        return boardViewFormatter.format(boardView);
     }
 }

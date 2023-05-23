@@ -1,5 +1,5 @@
-package com.andriienko.proxx.adapter.in.cli.resolver;
-import com.andriienko.proxx.adapter.in.resolver.InputResolver;
+package com.andriienko.proxx.cli.input.resolver;
+import com.andriienko.proxx.cli.input.InputResolver;
 import com.andriienko.proxx.enums.PlayMode;
 import java.util.Scanner;
 import java.util.function.Predicate;

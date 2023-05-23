@@ -21,9 +21,9 @@ public class Game {
     private final int size;
     private final Board board;
     private final int maxBlackHolesNumber;
-    private int openedCellsNumber;
+    private int revealedCellsNumber;
     private int blackHolesNumber;
-    private boolean blackHoleOpened;
+    private boolean blackHoleRevealed;
     private GameStatus status;
 
     Game(int rows, int columns) {
@@ -48,38 +48,38 @@ public class Game {
         return true;
     }
 
-    public void openCell(int row, int column) {
+    public void revealCell(int row, int column) {
         Cell cell = board.getCellAt(row, column);
         if (cell.isBlackHole()) {
-            blackHoleOpened = true;
-            openedCellsNumber = size;
+            blackHoleRevealed = true;
+            revealedCellsNumber = size;
         } else {
-            openSafeCells(row, column);
+            revealSafeCells(row, column);
         }
         transitToStatus();
     }
 
     private void transitToStatus() {
-        if (blackHoleOpened) {
+        if (blackHoleRevealed) {
             status = GameStatus.LOSE;
-            openAll();
-        } else if (blackHolesNumber + openedCellsNumber == size) {
+            revealAll();
+        } else if (blackHolesNumber + revealedCellsNumber == size) {
             status = GameStatus.WIN;
         }
     }
 
-    private void openAll() {
+    private void revealAll() {
         for (int row = 0; row < board.getRows(); row++) {
             for (int column = 0; column < board.getColumns(); column++) {
                 Cell cell = board.getCellAt(row, column);
-                if (!cell.isOpened()) {
-                    cell.markAsOpened();
+                if (!cell.isRevealed()) {
+                    cell.markAsRevealed();
                 }
             }
         }
     }
 
-    private void openSafeCells(int row, int column) {
+    private void revealSafeCells(int row, int column) {
         Cell rootCell = board.getCellAt(row, column);
         if (rootCell.isBlackHole()) {
             return;
@@ -90,16 +90,16 @@ public class Game {
         cellsAdded.add(rootCell);
         while (!cells.isEmpty()) {
             Cell cell = cells.poll();
-            cell.markAsOpened();
+            cell.markAsRevealed();
             if (cell.isEmpty()) {
                 board.visitAdjacentCells(cell.getRow(), cell.getColumn(), adjacentCell -> {
-                    if (!adjacentCell.isOpened() && !adjacentCell.isBlackHole() && !cellsAdded.contains(adjacentCell)) {
+                    if (!adjacentCell.isRevealed() && !adjacentCell.isBlackHole() && !cellsAdded.contains(adjacentCell)) {
                         cells.add(adjacentCell);
                         cellsAdded.add(adjacentCell);
                     }
                 });
             }
-            openedCellsNumber++;
+            revealedCellsNumber++;
         }
 
     }

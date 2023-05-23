@@ -29,7 +29,7 @@ public class GameMapperTest {
         Game game = gameFactory.createGameWithRandomlyDistributedHoles(BOARD_DIMENSION_SIZE, BOARD_DIMENSION_SIZE, 1);
         GameView gameView = gameMapper.transformToGameView(game);
 
-        assertEquals(game.getOpenedCellsNumber(), gameView.getOpenedCellsNumber());
+        assertEquals(game.getRevealedCellsNumber(), gameView.getRevealedCellsNumber());
         assertEquals(game.getBlackHolesNumber(), gameView.getBlackHolesNumber());
         assertEquals(game.getSize(), gameView.getSize());
         assertEquals(game.getStatus(), gameView.getStatus());
@@ -46,7 +46,7 @@ public class GameMapperTest {
                 Cell cell = game.getBoard().getCellAt(row, col);
                 assertEquals(cell.getAdjacentBlackHolesCount(), cellView.getAdjacentBlackHolesCount());
                 assertEquals(cell.isBlackHole(), cellView.isBlackHole());
-                assertEquals(cell.isOpened(), cellView.isOpened());
+                assertEquals(cell.isRevealed(), cellView.isRevealed());
                 assertEquals(cell.isEmpty(), cellView.isEmpty());
             }
         }

@@ -62,16 +62,16 @@ public class ProxxGameServiceTest {
     }
 
     @Test
-    @DisplayName("Should open cell in existing game")
-    void shouldOpenCellInExistingGame() {
+    @DisplayName("Should reveal cell in existing game")
+    void shouldRevealCellInExistingGame() {
         int row = 1;
         int column = 1;
         when(gameRepository.get()).thenReturn(game);
         when(gameMapper.transformToGameView(any())).thenReturn(gameView);
 
-        gameService.openCell(row, column);
+        gameService.revealCell(row, column);
 
-        verify(game).openCell(row, column);
+        verify(game).revealCell(row, column);
         verify(gameMapper).transformToGameView(game);
     }
 }

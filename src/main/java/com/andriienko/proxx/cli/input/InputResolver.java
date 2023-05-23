@@ -1,4 +1,4 @@
-package com.andriienko.proxx.adapter.in.resolver;
+package com.andriienko.proxx.cli.input;
 
 import com.andriienko.proxx.enums.PlayMode;
 

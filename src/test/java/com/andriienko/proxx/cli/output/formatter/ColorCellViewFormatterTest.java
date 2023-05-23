@@ -1,4 +1,4 @@
-package com.andriienko.proxx.adapter.in.cli.formatter;
+package com.andriienko.proxx.cli.output.formatter;
 
 import com.andriienko.proxx.application.dto.CellView;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,18 +10,18 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ConsoleCellFormatterTest {
+public class ColorCellViewFormatterTest {
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLACK = "\u001B[30m";
     private static final String ANSI_RED = "\u001B[91m";
     private static final String ANSI_YELLOW = "\u001B[93m";
     private static final String ANSI_BLUE = "\u001B[94m";
 
-    ConsoleCellFormatter formatter;
+    ColorCellViewFormatter formatter;
 
     @BeforeEach
     void setUp() {
-        formatter = new ConsoleCellFormatter();
+        formatter = new ColorCellViewFormatter();
     }
 
     static Stream<Arguments> cellViewData() {
@@ -38,9 +38,9 @@ public class ConsoleCellFormatterTest {
     @MethodSource("cellViewData")
     void shouldFormatCell(String color, String value, CellView cellView) {
         if("".equals(color)) {
-            assertEquals("", formatter.format(null));
+            assertEquals("", formatter.createCellView(null));
         } else {
-            assertEquals(String.format("%-12s", color + value + ANSI_RESET) , formatter.format(cellView));
+            assertEquals(String.format("%-12s", color + value + ANSI_RESET) , formatter.createCellView(cellView));
         }
     }
 }

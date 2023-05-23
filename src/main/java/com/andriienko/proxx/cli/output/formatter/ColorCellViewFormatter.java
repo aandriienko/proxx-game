@@ -1,9 +1,9 @@
-package com.andriienko.proxx.adapter.in.cli.formatter;
+package com.andriienko.proxx.cli.output.formatter;
 
 import com.andriienko.proxx.application.dto.CellView;
-import com.andriienko.proxx.adapter.in.formatter.CellFormatter;
+import com.andriienko.proxx.cli.output.CellViewFormatter;
 
-public class ConsoleCellFormatter implements CellFormatter {
+public class ColorCellViewFormatter implements CellViewFormatter {
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_BLACK = "\u001B[30m";
     private static final String ANSI_RED = "\u001B[91m";
@@ -11,12 +11,12 @@ public class ConsoleCellFormatter implements CellFormatter {
     private static final String ANSI_BLUE = "\u001B[94m";
 
     @Override
-    public String format(CellView cell) {
+    public String createCellView(CellView cell) {
         if(cell == null) {
             return "";
         }
         String cellString;
-        if (cell.isOpened()) {
+        if (cell.isRevealed()) {
             if (cell.isBlackHole()) {
                 cellString =  ANSI_RED + "H" + ANSI_RESET;
             } else {

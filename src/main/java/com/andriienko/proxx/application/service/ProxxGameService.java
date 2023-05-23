@@ -21,9 +21,9 @@ public class ProxxGameService implements PlayGameUseCase {
         return gameMapper.transformToGameView(game);
     }
 
-    public GameView openCell(int row, int column) {
+    public GameView revealCell(int row, int column) {
         Game game = gameRepository.get();
-        game.openCell(row, column);
+        game.revealCell(row, column);
         return gameMapper.transformToGameView(game);
     }
 }

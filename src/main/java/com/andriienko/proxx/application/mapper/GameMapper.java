@@ -12,7 +12,7 @@ public class GameMapper {
 
     public GameView transformToGameView(Game game) {
         return new GameView(
-                game.getOpenedCellsNumber(),
+                game.getRevealedCellsNumber(),
                 game.getBlackHolesNumber(),
                 game.getSize(),
                 game.getStatus(),
@@ -30,7 +30,7 @@ public class GameMapper {
                 cells[row][col] = new CellView(
                         cell.getAdjacentBlackHolesCount(),
                         cell.isBlackHole(),
-                        cell.isOpened(),
+                        cell.isRevealed(),
                         cell.isEmpty()
                 );
             }

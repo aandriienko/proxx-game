@@ -15,7 +15,7 @@ import lombok.Getter;
 public class Cell {
     private final int row;
     private final int column;
-    private boolean isOpened;
+    private boolean isRevealed;
     private boolean isBlackHole;
     private int adjacentBlackHolesCount;
 
@@ -23,7 +23,7 @@ public class Cell {
         this.row = row;
         this.column = column;
         this.isBlackHole = false;
-        this.isOpened = false;
+        this.isRevealed = false;
         this.adjacentBlackHolesCount = 0;
     }
 
@@ -38,8 +38,8 @@ public class Cell {
         return adjacentBlackHolesCount == 0;
     }
 
-    void markAsOpened() {
-        isOpened = true;
+    void markAsRevealed() {
+        isRevealed = true;
     }
 
     void markAsBlackHole() {

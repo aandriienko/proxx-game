@@ -128,55 +128,55 @@ public class GameTest {
     }
 
     @Test
-    @DisplayName("On black hole open should lose")
-    void shouldLSetBlackHoleOpenedFlagAndOpenAllCells() {
+    @DisplayName("On black hole reveal should lose")
+    void shouldLSetBlackHoleRevealedFlagAndRevealAllCells() {
         int row = 1;
         int column = 1;
         game.placeBlackHole(row, column);
-        forEachCell(board, c -> assertFalse(c.isOpened()));
-        assertFalse(game.isBlackHoleOpened());
+        forEachCell(board, c -> assertFalse(c.isRevealed()));
+        assertFalse(game.isBlackHoleRevealed());
 
-        game.openCell(row, column);
+        game.revealCell(row, column);
 
-        forEachCell(board, c -> assertTrue(c.isOpened()));
-        assertTrue(game.isBlackHoleOpened());
+        forEachCell(board, c -> assertTrue(c.isRevealed()));
+        assertTrue(game.isBlackHoleRevealed());
         assertEquals(GameStatus.LOSE, game.getStatus());
     }
 
     @Test
-    @DisplayName("Should open single cell if root cell non-empty ")
-    void shouldOpenSingLeCellIfNonEmpty() {
+    @DisplayName("Should reveal single cell if root cell non-empty ")
+    void shouldRevealSingLeCellIfNonEmpty() {
         game.placeBlackHole(1, 2);
 
-        forEachCell(board, c -> assertFalse(c.isOpened()));
-        assertEquals(0, game.getOpenedCellsNumber());
+        forEachCell(board, c -> assertFalse(c.isRevealed()));
+        assertEquals(0, game.getRevealedCellsNumber());
 
 
         final Cell rootCell = board.getCellAt(1, 1);
-        game.openCell(rootCell.getRow(), rootCell.getColumn());
+        game.revealCell(rootCell.getRow(), rootCell.getColumn());
 
         forEachCell(board, c -> {
             if (c == rootCell) {
-                assertTrue(c.isOpened());
+                assertTrue(c.isRevealed());
             } else {
-                assertFalse(c.isOpened());
+                assertFalse(c.isRevealed());
             }
         });
-        assertEquals(1, game.getOpenedCellsNumber());
+        assertEquals(1, game.getRevealedCellsNumber());
         assertEquals(GameStatus.IN_PROGRESS, game.getStatus());
     }
 
     @Test
-    @DisplayName("Opens root cell and its empty neighbors")
-    public void shouldOpenRootAndEmptyNeighbors() {
+    @DisplayName("Reveals root cell and its empty neighbors")
+    public void shouldRevealRootAndEmptyNeighbors() {
         game.placeBlackHole(1, 2);
-        forEachCell(board, c -> assertFalse(c.isOpened()));
-        assertEquals(0, game.getOpenedCellsNumber());
+        forEachCell(board, c -> assertFalse(c.isRevealed()));
+        assertEquals(0, game.getRevealedCellsNumber());
 
         Cell rootCell = board.getCellAt(0, 0);
-        game.openCell(rootCell.getRow(), rootCell.getColumn());
+        game.revealCell(rootCell.getRow(), rootCell.getColumn());
 
-        final Set<Cell> expectedOpened = Set.of(rootCell,
+        final Set<Cell> expectedRevealed = Set.of(rootCell,
                 board.getCellAt(1, 0),
                 board.getCellAt(2, 0),
                 board.getCellAt(0, 1),
@@ -184,18 +184,18 @@ public class GameTest {
                 board.getCellAt(2, 1));
 
         forEachCell(board, c -> {
-            if (expectedOpened.contains(c)) {
-                assertTrue(c.isOpened());
+            if (expectedRevealed.contains(c)) {
+                assertTrue(c.isRevealed());
             } else {
-                assertFalse(c.isOpened());
+                assertFalse(c.isRevealed());
             }
         });
-        assertEquals(6, game.getOpenedCellsNumber());
+        assertEquals(6, game.getRevealedCellsNumber());
         assertEquals(GameStatus.IN_PROGRESS, game.getStatus());
     }
 
     @Test
-    @DisplayName("Should lead to win when opened all nut black holes")
+    @DisplayName("Should lead to win when revealed all not black holes")
     public void shouldLeadToWin() {
         /*       0 0 0
                  0 1 1
@@ -203,19 +203,19 @@ public class GameTest {
          */
         Cell blackHole = board.getCellAt(2, 2);
         game.placeBlackHole(blackHole.getRow(), blackHole.getColumn());
-        forEachCell(board, c -> assertFalse(c.isOpened()));
-        assertEquals(0, game.getOpenedCellsNumber());
+        forEachCell(board, c -> assertFalse(c.isRevealed()));
+        assertEquals(0, game.getRevealedCellsNumber());
 
-        game.openCell(0, 0);
+        game.revealCell(0, 0);
 
         forEachCell(board, c -> {
             if (c == blackHole) {
-                assertFalse(c.isOpened());
+                assertFalse(c.isRevealed());
             } else {
-                assertTrue(c.isOpened());
+                assertTrue(c.isRevealed());
             }
         });
-        assertEquals(8, game.getOpenedCellsNumber());
+        assertEquals(8, game.getRevealedCellsNumber());
         assertEquals(GameStatus.WIN, game.getStatus());
     }
 

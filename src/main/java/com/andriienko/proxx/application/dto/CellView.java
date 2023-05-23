@@ -9,6 +9,6 @@ import lombok.experimental.FieldDefaults;
 public class CellView {
     int adjacentBlackHolesCount;
     boolean isBlackHole;
-    boolean isOpened;
+    boolean isRevealed;
     boolean isEmpty;
 }

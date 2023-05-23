@@ -1,8 +1,8 @@
 package com.andriienko.proxx.adapter.in.cli;
 
 import com.andriienko.proxx.adapter.in.UIProxxAdapter;
-import com.andriienko.proxx.adapter.in.printer.GamePrinter;
-import com.andriienko.proxx.adapter.in.resolver.InputResolver;
+import com.andriienko.proxx.cli.output.UIFactory;
+import com.andriienko.proxx.cli.input.InputResolver;
 import com.andriienko.proxx.application.dto.GameView;
 import com.andriienko.proxx.application.port.in.PlayGameUseCase;
 import com.andriienko.proxx.enums.GameStatus;
@@ -15,22 +15,21 @@ import java.util.function.Predicate;
 public class ConsoleProxxAdapter implements UIProxxAdapter {
 
     private final PlayGameUseCase gameService;
-    private final GamePrinter gamePrinter;
     private final InputResolver inputResolver;
+    private final UIFactory uiFactory;
 
     public void run() {
-        gamePrinter.clearScreen();
-        gamePrinter.printMainMenu();
+        printMainMenu();
         gameLoop(createGame());
     }
 
     private void gameLoop(GameView gameView) {
-        gamePrinter.printBoard(gameView);
+        printBoard(gameView);
         do {
             int row = inputResolver.getIntegerInput(isValidRowNumber(gameView), "Row (q for exit): ");
             int column = inputResolver.getIntegerInput(isValidColumnNumber(gameView), "Col (q for exit): ");
-            gameView = gameService.openCell(row - 1, column - 1);
-            gamePrinter.printBoard(gameView);
+            gameView = gameService.revealCell(row - 1, column - 1);
+            printBoard(gameView);
         } while (gameView.getStatus() == GameStatus.IN_PROGRESS);
 
         if (gameView.getStatus() == GameStatus.WIN) {
@@ -55,6 +54,32 @@ public class ConsoleProxxAdapter implements UIProxxAdapter {
             gameView = gameService.newGame(mode.getRows(), mode.getColumns(), mode.getBlackHoles());
         }
         return gameView;
+    }
+
+    private void printMainMenu() {
+        clearScreen();
+        printBanner();
+        System.out.println(uiFactory.createMainMenu());
+    }
+
+    private void printBanner() {
+        System.out.println(uiFactory.createBanner());
+        System.out.println();
+    }
+
+    private void printBoard(GameView gameView) {
+        System.out.println("\n\n");
+        clearScreen();
+        System.out.println(uiFactory.createBoard(gameView.getBoardView()));
+        System.out.printf("Revealed %d of %d with %d black holes!%n%n", gameView.getRevealedCellsNumber(), gameView.getSize(), gameView.getBlackHolesNumber());
+    }
+
+    /**
+     * Not all CLI supports this
+     */
+    private void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 
     private Predicate<Integer> isValidRowNumber(GameView gameView) {

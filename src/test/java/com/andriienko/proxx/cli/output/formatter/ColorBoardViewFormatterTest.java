@@ -1,4 +1,4 @@
-package com.andriienko.proxx.adapter.in.cli.formatter;
+package com.andriienko.proxx.cli.output.formatter;
 
 import com.andriienko.proxx.application.dto.BoardView;
 import com.andriienko.proxx.application.dto.CellView;
@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ConsoleBoardViewFormatterTest {
-    ConsoleBoardViewFormatter consoleBoardViewFormatter;
-    ConsoleCellFormatter consoleCellFormatter;
+public class ColorBoardViewFormatterTest {
+    ColorBoardViewFormatter colorBoardViewFormatter;
+    ColorCellViewFormatter consoleCellFormatter;
 
     @BeforeEach
     public void setUp() {
-        consoleCellFormatter = new ConsoleCellFormatter();
-        consoleBoardViewFormatter = new ConsoleBoardViewFormatter(consoleCellFormatter);
+        consoleCellFormatter = new ColorCellViewFormatter();
+        colorBoardViewFormatter = new ColorBoardViewFormatter(consoleCellFormatter);
     }
 
     @Test
@@ -30,11 +30,11 @@ public class ConsoleBoardViewFormatterTest {
 
         BoardView boardView = new BoardView(2, 2, cells);
         String expected = "    1   2  \n" +
-                "1   " + consoleCellFormatter.format(cells[0][0]) + " " + consoleCellFormatter.format(cells[0][1]) + "1   " + "\n" +
-                "2   " + consoleCellFormatter.format(cells[1][0]) + " " + consoleCellFormatter.format(cells[1][1]) + "2   " + "\n" +
+                "1   " + consoleCellFormatter.createCellView(cells[0][0]) + " " + consoleCellFormatter.createCellView(cells[0][1]) + "1   " + "\n" +
+                "2   " + consoleCellFormatter.createCellView(cells[1][0]) + " " + consoleCellFormatter.createCellView(cells[1][1]) + "2   " + "\n" +
                           "    1   2  \n";
 
         System.out.println(expected);
-        assertEquals(expected, consoleBoardViewFormatter.format(boardView));
+        assertEquals(expected, colorBoardViewFormatter.format(boardView));
     }
 }
