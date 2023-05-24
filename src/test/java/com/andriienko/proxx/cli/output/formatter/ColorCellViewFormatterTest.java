@@ -15,7 +15,7 @@ public class ColorCellViewFormatterTest {
     private static final String ANSI_BLACK = "\u001B[30m";
     private static final String ANSI_RED = "\u001B[91m";
     private static final String ANSI_YELLOW = "\u001B[93m";
-    private static final String ANSI_BLUE = "\u001B[94m";
+    private static final String ANSI_CYAN = "\u001B[96m";
 
     ColorCellViewFormatter formatter;
 
@@ -29,7 +29,7 @@ public class ColorCellViewFormatterTest {
                 Arguments.of("", "", new CellView(0, true, true, false)),
                 Arguments.of(ANSI_RED, "H", new CellView(0, true, true, false)),
                 Arguments.of(ANSI_BLACK, "0", new CellView(0, false, true, true)),
-                Arguments.of(ANSI_BLUE, "3", new CellView(3, false, true, false)),
+                Arguments.of(ANSI_CYAN, "3", new CellView(3, false, true, false)),
                 Arguments.of(ANSI_YELLOW, "*", new CellView(0, false, false, false))
         );
     }

@@ -12,7 +12,7 @@ public class ColorCellViewFormatter implements CellViewFormatter {
     private static final String ANSI_BLACK = "\u001B[30m";
     private static final String ANSI_RED = "\u001B[91m";
     private static final String ANSI_YELLOW = "\u001B[93m";
-    private static final String ANSI_BLUE = "\u001B[94m";
+    private static final String ANSI_CYAN = "\u001B[96m";
 
     @Override
     public String createCellView(CellView cell) {
@@ -27,7 +27,7 @@ public class ColorCellViewFormatter implements CellViewFormatter {
                 if(cell.isEmpty()) {
                     cellString = ANSI_BLACK + cell.getAdjacentBlackHolesCount() + ANSI_RESET;
                 } else {
-                    cellString = ANSI_BLUE + cell.getAdjacentBlackHolesCount() + ANSI_RESET;
+                    cellString = ANSI_CYAN + cell.getAdjacentBlackHolesCount() + ANSI_RESET;
                 }
             }
         } else {
