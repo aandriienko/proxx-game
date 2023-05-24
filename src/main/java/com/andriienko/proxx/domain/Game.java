@@ -121,7 +121,9 @@ public class Game {
         cellsAdded.add(rootCell);
         while (!cells.isEmpty()) {
             Cell cell = cells.poll();
-            cell.markAsRevealed();
+            if(cell.isRevealed()) {
+                continue;
+            }
             if (cell.isEmpty()) {
                 board.visitAdjacentCells(cell.getRow(), cell.getColumn(), adjacentCell -> {
                     if (!adjacentCell.isRevealed() && !adjacentCell.isBlackHole() && !cellsAdded.contains(adjacentCell)) {
@@ -130,6 +132,7 @@ public class Game {
                     }
                 });
             }
+            cell.markAsRevealed();
             revealedCellsNumber++;
         }
 

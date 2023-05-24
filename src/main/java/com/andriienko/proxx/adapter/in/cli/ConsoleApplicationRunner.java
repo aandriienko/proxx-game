@@ -44,13 +44,8 @@ public class ConsoleApplicationRunner implements ApplicationRunner {
         do {
             int row = inputResolver.getIntegerInput(isValidRowNumber(gameView), "Row [%d..%d] (q for exit): ".formatted(1, gameView.getBoardView().getRows()));
             int column = inputResolver.getIntegerInput(isValidColumnNumber(gameView), "Col [%d..%d] (q for exit): ".formatted(1, gameView.getBoardView().getColumns()));
-            if(isCellRevealed(gameView, row - 1, column - 1)) {
-                System.out.println("Cell is already revealed");
-                clearScreen();
-            } else {
-                gameView = gameService.revealCell(row - 1, column - 1);
-                printBoard(gameView);
-            }
+            gameView = gameService.revealCell(row - 1, column - 1);
+            printBoard(gameView);
         } while (gameView.getStatus() == GameStatus.IN_PROGRESS);
 
         if (gameView.getStatus() == GameStatus.WIN) {
@@ -65,9 +60,10 @@ public class ConsoleApplicationRunner implements ApplicationRunner {
     }
 
     /**
-     *  If the user chooses a custom mode, the method further asks the user to provide a board size and the number of black holes,
-     *  and then uses this data to create a new game.<p>
-     *  If a predefined mode is chosen, the new game is created using the predefined parameters for that mode.
+     * If the user chooses a custom mode, the method further asks the user to provide a board size and the number of black holes,
+     * and then uses this data to create a new game.<p>
+     * If a predefined mode is chosen, the new game is created using the predefined parameters for that mode.
+     *
      * @return GameView - snapshot of the game state for display purposes.
      */
     private GameView createGame() {
@@ -95,22 +91,18 @@ public class ConsoleApplicationRunner implements ApplicationRunner {
     }
 
     private void printBoard(GameView gameView) {
-        System.out.println("\n\n");
         clearScreen();
+        System.out.println("\n\n");
         System.out.println(uiFactory.createBoard(gameView.getBoardView()));
         System.out.printf("Revealed %d of %d with %d black holes!%n%n", gameView.getRevealedCellsNumber(), gameView.getSize(), gameView.getBlackHolesNumber());
     }
 
     /**
-     *  Applies escape sequence to clear screen, unfortunately not all terminals supports this
+     * Applies escape sequence to clear screen, unfortunately not all terminals supports this
      */
     private void clearScreen() {
         System.out.print("\u001B[H\u001B[2J");
         System.out.flush();
-    }
-
-    private  boolean isCellRevealed(GameView gameView, int row, int column) {
-        return gameView.getBoardView().getCells()[row][column].isRevealed();
     }
 
     private Predicate<Integer> isValidRowNumber(GameView gameView) {
