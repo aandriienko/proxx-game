@@ -3,6 +3,7 @@ package com.andriienko.proxx.cli.output.formatter;
 import com.andriienko.proxx.application.dto.BoardView;
 import com.andriienko.proxx.application.dto.CellView;
 import com.andriienko.proxx.cli.output.BoardViewFormatter;
+import com.andriienko.proxx.cli.output.CellViewFormatter;
 import lombok.AllArgsConstructor;
 
 import java.util.StringJoiner;
@@ -16,7 +17,7 @@ import java.util.StringJoiner;
 @AllArgsConstructor
 public class ColorBoardViewFormatter implements BoardViewFormatter {
 
-    private final ColorCellViewFormatter cellFormatter;
+    private final CellViewFormatter cellFormatter;
 
     @Override
     public String format(BoardView boardView) {
