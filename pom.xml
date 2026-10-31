@@ -9,20 +9,20 @@
     <version>1.0</version>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>25</java.version>
         <default.encoding>UTF-8</default.encoding>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>${default.encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${default.encoding}</project.reporting.outputEncoding>
-        <lombok.version>1.18.26</lombok.version>
-        <assertj.version>3.24.2</assertj.version>
-        <junit.version>5.10.0-M1</junit.version>
-        <surefire.version>3.1.0</surefire.version>
-        <mockito.version>5.3.1</mockito.version>
-        <jar.plugin.version>3.3.0</jar.plugin.version>
-        <assembly.version>3.6.0</assembly.version>
+        <lombok.version>1.18.40</lombok.version>
+        <junit.version>5.14.4</junit.version>
+        <mockito.version>5.23.0</mockito.version>
+        <compiler.plugin.version>3.16.0</compiler.plugin.version>
+        <surefire.version>3.6.0</surefire.version>
+        <assembly.version>3.8.0</assembly.version>
+        <dependency.plugin.version>3.11.0</dependency.plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -64,17 +64,49 @@
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler.plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
+                <configuration>
+                    <!-- JDK 25 (JEP 451) blocks Mockito's agent self-attach, so the agent is passed explicitly
+                         here as a hardcoded argLine rather than the @{argLine} placeholder. If JaCoCo or another
+                         agent-based plugin is added later, this must become @{argLine} -javaagent:... or the
+                         agents will clobber each other. -->
+                    <argLine>-javaagent:${org.mockito:mockito-core:jar}</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${dependency.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>resolve-agent-paths</id>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>${assembly.version}</version>
                 <configuration>
                     <archive>
                         <manifest>

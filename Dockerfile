@@ -1,4 +1,4 @@
-FROM maven:3.8.5-eclipse-temurin-17 AS build
+FROM maven:3.9.16-eclipse-temurin-25 AS build
 
 COPY pom.xml /usr/src/app/pom.xml
 RUN mvn -f /usr/src/app/pom.xml dependency:go-offline
@@ -7,7 +7,7 @@ COPY src /usr/src/app/src
 RUN mvn -f /usr/src/app/pom.xml clean package
 
 #--
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:25-jre
 
 EXPOSE 8080
 
