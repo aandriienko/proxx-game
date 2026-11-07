@@ -57,6 +57,10 @@ public class Game {
         return true;
     }
 
+    public void toggleFlag(int row, int column) {
+        board.getCellAt(row, column).toggleFlag();
+    }
+
     /**
      * Reveals the cell at row,column.<p>
      * 1) For black holes just sets internal variables, that is used for status transition evaluation<p>
@@ -66,6 +70,9 @@ public class Game {
      */
     public void revealCell(int row, int column) {
         Cell cell = board.getCellAt(row, column);
+        if (cell.isFlagged()) {
+            return;
+        }
         if (cell.isBlackHole()) {
             blackHoleRevealed = true;
             revealedCellsNumber = size;
@@ -106,7 +113,8 @@ public class Game {
     /**
      * Reveals only safe (non-black hole) cell.
      * <p>1) For non-empty cell - just opens it.
-     * <p>2) For empty cell - uses BFS algorithm to open all connected empty cells
+     * <p>2) For empty cell - uses BFS algorithm to open all connected empty cells,
+     * stopping at flagged cells so a flag always survives a sweep
      * @param row - zero based row coordinate
      * @param column - zero based column coordinate
      */
@@ -126,7 +134,8 @@ public class Game {
             }
             if (cell.isEmpty()) {
                 board.visitAdjacentCells(cell.getRow(), cell.getColumn(), adjacentCell -> {
-                    if (!adjacentCell.isRevealed() && !adjacentCell.isBlackHole() && !cellsAdded.contains(adjacentCell)) {
+                    if (!adjacentCell.isRevealed() && !adjacentCell.isBlackHole()
+                            && !adjacentCell.isFlagged() && !cellsAdded.contains(adjacentCell)) {
                         cells.add(adjacentCell);
                         cellsAdded.add(adjacentCell);
                     }

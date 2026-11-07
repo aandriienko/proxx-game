@@ -19,15 +19,24 @@ public class ProxxGameService implements PlayGameUseCase {
     private final GameRepository gameRepository;
     private final GameMapper gameMapper;
 
+    @Override
     public GameView newGame(int rows, int columns, int blackHoles) {
         Game game = gameFactory.createGameWithRandomlyDistributedHoles(rows, columns, blackHoles);
         gameRepository.save(game);
         return gameMapper.transformToGameView(game);
     }
 
+    @Override
     public GameView revealCell(int row, int column) {
         Game game = gameRepository.get();
         game.revealCell(row, column);
+        return gameMapper.transformToGameView(game);
+    }
+
+    @Override
+    public GameView toggleFlag(int row, int column) {
+        Game game = gameRepository.get();
+        game.toggleFlag(row, column);
         return gameMapper.transformToGameView(game);
     }
 }

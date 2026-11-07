@@ -219,4 +219,103 @@ public class GameTest {
         assertEquals(GameStatus.WIN, game.getStatus());
     }
 
+    @Test
+    @DisplayName("Toggling a flag should not change counters or status")
+    void shouldNotAffectCountersWhenFlagging() {
+        game.toggleFlag(0, 0);
+
+        assertTrue(game.getBoard().getCellAt(0, 0).isFlagged());
+        assertEquals(0, game.getRevealedCellsNumber());
+        assertEquals(GameStatus.IN_PROGRESS, game.getStatus());
+    }
+
+    @Test
+    @DisplayName("A flagged safe cell should not be revealed")
+    void shouldNotRevealFlaggedSafeCell() {
+        game.toggleFlag(0, 0);
+        game.revealCell(0, 0);
+
+        assertFalse(game.getBoard().getCellAt(0, 0).isRevealed());
+        assertEquals(0, game.getRevealedCellsNumber());
+    }
+
+    @Test
+    @DisplayName("A flagged black hole should not end the game")
+    void shouldNotLoseWhenRevealingFlaggedBlackHole() {
+        game.placeBlackHole(1, 1);
+        game.toggleFlag(1, 1);
+        game.revealCell(1, 1);
+
+        assertEquals(GameStatus.IN_PROGRESS, game.getStatus());
+        assertFalse(game.getBoard().getCellAt(1, 1).isRevealed());
+    }
+
+    @Test
+    @DisplayName("Un-flagging a cell should allow it to be revealed again")
+    void shouldRevealAfterUnflagging() {
+        game.placeBlackHole(1, 1);
+        game.toggleFlag(0, 0);
+        game.revealCell(0, 0);
+        assertFalse(game.getBoard().getCellAt(0, 0).isRevealed());
+
+        game.toggleFlag(0, 0);
+        game.revealCell(0, 0);
+        assertTrue(game.getBoard().getCellAt(0, 0).isRevealed());
+    }
+
+    @Test
+    @DisplayName("A flood fill should leave a flagged cell alone")
+    void shouldNotRevealFlaggedCellDuringFloodFill() {
+        // Only hole at (2,2), so (0,0) is empty and revealing it sweeps most of the board.
+        game.placeBlackHole(2, 2);
+        game.toggleFlag(0, 2);
+
+        game.revealCell(0, 0);
+
+        assertFalse(board.getCellAt(0, 2).isRevealed(), "the flood swallowed a flagged cell");
+        assertTrue(board.getCellAt(0, 2).isFlagged());
+    }
+
+    @Test
+    @DisplayName("A flood fill should not expand through a flagged cell")
+    void shouldNotFloodThroughFlaggedCell() {
+        // (0,2) is only reachable from (0,0) via (0,1); its other neighbours touch the hole
+        // and so never expand. Flagging (0,1) must therefore leave (0,2) closed too.
+        game.placeBlackHole(2, 2);
+        game.toggleFlag(0, 1);
+
+        game.revealCell(0, 0);
+
+        assertFalse(board.getCellAt(0, 1).isRevealed());
+        assertFalse(board.getCellAt(0, 2).isRevealed(), "the flood leaked through a flagged cell");
+    }
+
+    @Test
+    @DisplayName("Un-flagging should let a previously blocked region open")
+    void shouldOpenBlockedRegionAfterUnflagging() {
+        game.placeBlackHole(2, 2);
+        game.toggleFlag(0, 1);
+        game.revealCell(0, 0);
+        assertFalse(board.getCellAt(0, 2).isRevealed());
+
+        game.toggleFlag(0, 1);
+        game.revealCell(0, 1);
+
+        assertTrue(board.getCellAt(0, 1).isRevealed());
+        assertTrue(board.getCellAt(0, 2).isRevealed());
+    }
+
+    @Test
+    @DisplayName("A board flagged everywhere but the holes should still be winnable once cleared")
+    void shouldStillWinAfterFlagsAreCleared() {
+        game.placeBlackHole(2, 2);
+        game.toggleFlag(0, 2);
+        game.revealCell(0, 0);
+        assertEquals(GameStatus.IN_PROGRESS, game.getStatus());
+
+        game.toggleFlag(0, 2);
+        game.revealCell(0, 2);
+
+        assertEquals(GameStatus.WIN, game.getStatus());
+    }
 }

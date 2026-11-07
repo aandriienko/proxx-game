@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
@@ -73,5 +74,17 @@ public class ProxxGameServiceTest {
 
         verify(game).revealCell(row, column);
         verify(gameMapper).transformToGameView(game);
+    }
+
+    @Test
+    @DisplayName("Toggling a flag should load the game, delegate and map the result")
+    void shouldToggleFlag() {
+        when(gameRepository.get()).thenReturn(game);
+
+        GameView actual = gameService.toggleFlag(1, 2);
+
+        verify(game).toggleFlag(1, 2);
+        verify(gameRepository).get();
+        assertSame(gameView, actual);
     }
 }

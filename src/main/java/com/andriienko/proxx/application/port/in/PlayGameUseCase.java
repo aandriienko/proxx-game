@@ -6,4 +6,6 @@ public interface PlayGameUseCase {
     GameView newGame(int rows, int columns, int blackHoles);
 
     GameView revealCell(int row, int column);
+
+    GameView toggleFlag(int row, int column);
 }

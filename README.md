@@ -1,5 +1,5 @@
 # PROXX — a game of proximity
-**Java CLI version of Proxx game**
+**JavaFX version of the Proxx game**
 
 ## The Rules of PROXX
 
@@ -17,45 +17,44 @@ designed and developed to cater for each requirement.
 
 
 
-## Java Requirements
+## Running
 
-The application requires **Java 17** to run.
+Requires Java 17. The build enforces exactly that: a `maven-enforcer-plugin`
+rule pins the JDK to the `[17,18)` range and fails with an explicit message if
+you run Maven under any other version, 18 and newer included.
 
-## Building & Running
+    ./mvnw javafx:run
 
-### Using Maven wrapper
+Or build a self-contained jar and run it:
 
-
-1. Open your terminal and navigate to the project root directory.
-
-2. To compile the application and build a jar file, run the following command:
-
-    ```bash
-    mvnw clean package
-    ```
-
-3. To run the application, execute the jar file that was created in the `target` directory:
-
-    ```bash
+    ./mvnw clean package
     java -jar target/proxx-game-1.0-jar-with-dependencies.jar
-    ```
-> **Note:** If you are seeing escape characters in the console output when running locally, you may want to run the application using Docker, as shown below.
-The Docker container has been set up to correctly handle these characters.   
 
-### Using Docker
+The JavaFX native libraries are selected automatically by the platform
+profiles in `pom.xml`, which cover Windows x64, Linux x64, Linux ARM64,
+macOS Intel and macOS Apple Silicon. Override the detection with
+`-Djavafx.platform=<win|linux|linux-aarch64|mac|mac-aarch64>` when
+cross-building.
 
-1. Install [Docker](https://docs.docker.com/get-docker/) if you haven't done so.
+Note that the packaged jar carries native libraries for the platform that
+built it, so build on the machine you intend to run on. A single jar cannot
+carry every platform at once: the macOS Intel and Apple Silicon artifacts both
+contain `libglass.dylib` at the same path, as do the two Linux artifacts, so
+bundling both architectures of one OS would have one overwrite the other.
 
-2. Open your terminal and navigate to the project root directory.
+## Playing
 
-3. Build the Docker image:
+Choose a difficulty, or set Width, Height and Black holes yourself, then press
+START.
 
-    ```bash
-    docker build -t proxx-game .
-    ```
+- **Clear** mode: click a cell to reveal it. The background turns red while you
+  are in Clear mode, because this is the move that can lose the game.
+- **Flag** mode: click an unrevealed cell to mark it. Flagging cannot lose the
+  game, so the background settles back to blue.
+- Right-click flags a cell in either mode.
+- Arrow keys move the focus, Space reveals, F flags.
+- A flagged cell cannot be revealed until you unflag it.
 
-4. Run the Docker container:
-
-    ```bash
-    docker run -p 8080:8080 -it --name proxx-game-container proxx-game
-    ```
+Reveal every cell that is not a black hole to win. Open a black hole and the
+board is revealed; from there you can deal a new board with the same settings
+(Try again) or return to the menu (Main menu).

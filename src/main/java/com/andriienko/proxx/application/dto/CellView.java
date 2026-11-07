@@ -11,4 +11,5 @@ public class CellView {
     boolean isBlackHole;
     boolean isRevealed;
     boolean isEmpty;
+    boolean isFlagged;
 }

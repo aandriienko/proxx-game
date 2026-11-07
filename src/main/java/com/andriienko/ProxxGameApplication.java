@@ -1,16 +1,11 @@
 package com.andriienko;
 
 import com.andriienko.proxx.adapter.in.ApplicationRunner;
-import com.andriienko.proxx.adapter.in.cli.ConsoleApplicationRunner;
+import com.andriienko.proxx.adapter.in.gui.JavaFxApplicationRunner;
 import com.andriienko.proxx.adapter.out.InMemorySingleGameRepository;
 import com.andriienko.proxx.application.mapper.GameMapper;
 import com.andriienko.proxx.application.port.in.PlayGameUseCase;
 import com.andriienko.proxx.application.service.ProxxGameService;
-import com.andriienko.proxx.cli.input.resolver.ConsoleInputResolver;
-import com.andriienko.proxx.cli.output.BoardViewFormatter;
-import com.andriienko.proxx.cli.output.factory.ConsoleUIFactory;
-import com.andriienko.proxx.cli.output.formatter.ColorBoardViewFormatter;
-import com.andriienko.proxx.cli.output.formatter.ColorCellViewFormatter;
 import com.andriienko.proxx.domain.GameFactory;
 
 public class ProxxGameApplication {
@@ -21,12 +16,7 @@ public class ProxxGameApplication {
                 new GameMapper()
         );
 
-        BoardViewFormatter boardViewFormatter = new ColorBoardViewFormatter(new ColorCellViewFormatter());
-        ApplicationRunner cliAdapter = new ConsoleApplicationRunner(
-                gameService,
-                new ConsoleInputResolver(),
-                new ConsoleUIFactory(boardViewFormatter)
-        );
-        cliAdapter.run();
+        ApplicationRunner guiAdapter = new JavaFxApplicationRunner(gameService);
+        guiAdapter.run();
     }
 }

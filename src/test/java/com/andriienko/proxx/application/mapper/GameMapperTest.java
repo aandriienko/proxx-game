@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 
 import static com.andriienko.proxx.TestUtils.BOARD_DIMENSION_SIZE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GameMapperTest {
     GameFactory gameFactory;
@@ -50,5 +52,17 @@ public class GameMapperTest {
                 assertEquals(cell.isEmpty(), cellView.isEmpty());
             }
         }
+    }
+
+    @Test
+    @DisplayName("A flagged cell should be mapped with isFlagged set")
+    void shouldMapFlaggedCell() {
+        Game game = new GameFactory().createGameWithRandomlyDistributedHoles(3, 3, 1);
+        game.toggleFlag(0, 0);
+
+        BoardView boardView = new GameMapper().transformToBoardView(game);
+
+        assertTrue(boardView.getCells()[0][0].isFlagged());
+        assertFalse(boardView.getCells()[0][1].isFlagged());
     }
 }

@@ -71,4 +71,27 @@ public class CellTest {
         );
     }
 
+    @Test
+    @DisplayName("A cell should not be flagged after creation")
+    void shouldNotBeFlaggedInitially() {
+        assertFalse(cell.isFlagged());
+    }
+
+    @Test
+    @DisplayName("A cell should toggle its flag on and back off")
+    void shouldToggleFlag() {
+        cell.toggleFlag();
+        assertTrue(cell.isFlagged());
+        cell.toggleFlag();
+        assertFalse(cell.isFlagged());
+    }
+
+    @Test
+    @DisplayName("A revealed cell should not accept a flag")
+    void shouldNotFlagRevealedCell() {
+        cell.markAsRevealed();
+        cell.toggleFlag();
+        assertFalse(cell.isFlagged());
+    }
+
 }

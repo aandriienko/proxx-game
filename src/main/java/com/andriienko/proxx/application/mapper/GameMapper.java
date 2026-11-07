@@ -31,7 +31,8 @@ public class GameMapper {
                         cell.getAdjacentBlackHolesCount(),
                         cell.isBlackHole(),
                         cell.isRevealed(),
-                        cell.isEmpty()
+                        cell.isEmpty(),
+                        cell.isFlagged()
                 );
             }
         }

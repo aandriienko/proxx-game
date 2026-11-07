@@ -16,6 +16,7 @@ public class Cell {
     private boolean isRevealed;
     private boolean isBlackHole;
     private int adjacentBlackHolesCount;
+    private boolean flagged;
 
     Cell(int row, int column) {
         this.row = row;
@@ -38,6 +39,13 @@ public class Cell {
 
     void markAsRevealed() {
         isRevealed = true;
+    }
+
+    void toggleFlag() {
+        if (isRevealed) {
+            return;
+        }
+        flagged = !flagged;
     }
 
     void markAsBlackHole() {
